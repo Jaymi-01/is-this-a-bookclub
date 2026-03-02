@@ -17,16 +17,16 @@ export default function Home() {
   }, [init]);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen overflow-x-hidden">
       {/* Navigation - Minimal and Styled */}
-      <nav className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-center pointer-events-none">
-        <div className="bg-rich-charcoal p-2 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] pointer-events-auto flex items-center gap-3">
-          <img src="/logo.png" alt="Bookclub Logo" className="h-10 w-auto" />
-          <span className="font-serif font-bold text-lg text-parchment tracking-tighter pr-2">ITABC.</span>
+      <nav className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between items-center pointer-events-none">
+        <div className="bg-rich-charcoal p-2 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] pointer-events-auto flex items-center gap-2 md:gap-3">
+          <img src="/logo.png" alt="Bookclub Logo" className="h-8 md:h-10 w-auto" />
+          <span className="font-serif font-black text-base md:text-lg text-parchment tracking-tighter pr-1 md:pr-2">ITABC.</span>
         </div>
         <div className="flex gap-4 pointer-events-auto">
-          <Link href="/admin" className="bg-rich-charcoal text-parchment p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#2A734D] hover:translate-y-1 hover:shadow-none transition-all">
-            <Gear size={24} weight="bold" />
+          <Link href="/admin" className="bg-rich-charcoal text-parchment p-2 md:p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#2A734D] hover:translate-y-1 hover:shadow-none transition-all">
+            <Gear size={20} className="md:w-6 md:h-6" weight="bold" />
           </Link>
         </div>
       </nav>
