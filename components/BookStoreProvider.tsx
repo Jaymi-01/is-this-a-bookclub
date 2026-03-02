@@ -7,10 +7,7 @@ export function BookStoreProvider({ children }: { children: React.ReactNode }) {
   const init = useBookStore((state) => state.init);
 
   useEffect(() => {
-    const unsub = init();
-    return () => {
-      if (typeof unsub === 'function') unsub();
-    };
+    init();
   }, [init]);
 
   return <>{children}</>;
