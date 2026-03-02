@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Membership Requests: Anyone can join, only Admin can manage
+    match /submissions/{submissionId} {
+      allow create: if true; 
+      allow read, delete, update: if request.auth != null; 
+    }
+
+    // 2. Global Site Content: Everyone can see, only Admin can edit
+    match /siteContent/{document=**} {
+      allow read: if true; 
+      allow write: if request.auth != null;
+    }
+
+    // 3. Activity Logs: Only Admin can read/write
+    match /activityLogs/{logId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
