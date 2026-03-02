@@ -51,7 +51,7 @@ export const useBookStore = create<BookStore>((set) => ({
   loading: true,
 
   init: () => {
-    const unsub = onSnapshot(doc(db, "siteContent", "main"), (docSnap) => {
+    onSnapshot(doc(db, "siteContent", "main"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         set({
@@ -71,7 +71,6 @@ export const useBookStore = create<BookStore>((set) => ({
       console.error("Firestore Read Error:", error);
       set({ loading: false });
     });
-    return unsub;
   },
 
   setCurrentBook: async (book) => {
