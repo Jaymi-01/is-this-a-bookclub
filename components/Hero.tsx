@@ -40,7 +40,7 @@ export function Hero() {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative group w-full max-w-[340px] md:max-w-[400px]"
+          className="relative group w-full max-w-[280px] sm:max-w-[340px] md:max-w-[400px]"
         >
           <div className="absolute inset-0 bg-rich-charcoal rounded-[2.5rem] translate-x-3 translate-y-3 md:translate-x-6 md:translate-y-6" />
           <div className="relative aspect-[3/4.5] overflow-hidden rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
