@@ -21,7 +21,8 @@ import {
   CircleNotch,
   Download,
   House,
-  Camera
+  Camera,
+  PencilLine
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
@@ -57,6 +58,7 @@ export default function AdminPage() {
     booksFinished, setBooksFinished, 
     activeMembers, setActiveMembers,
     communityImage, setCommunityImage,
+    signatures, setSignatures,
     init 
   } = useBookStore();
 
@@ -65,6 +67,7 @@ export default function AdminPage() {
   const [finishedCount, setFinishedCount] = useState(booksFinished);
   const [membersCount, setMembersCount] = useState(activeMembers);
   const [communityImageUrl, setCommunityImageUrl] = useState(communityImage);
+  const [signatureText, setSignatureText] = useState(signatures.join(", "));
   const [pastBookForm, setPastBookForm] = useState({
     title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
   });
@@ -99,6 +102,10 @@ export default function AdminPage() {
   useEffect(() => {
     setCommunityImageUrl(communityImage);
   }, [communityImage]);
+
+  useEffect(() => {
+    setSignatureText(signatures.join(", "));
+  }, [signatures]);
 
   useEffect(() => {
     if (!user) return;
@@ -222,6 +229,22 @@ export default function AdminPage() {
       await setCommunityImage(communityImageUrl);
       toast.success("Community vibe updated!");
       logActivity("UPDATE_COMMUNITY_IMAGE", "Changed community group photo");
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(`Error: ${e.message}`);
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  const handleUpdateSignatures = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoadingAction("signatures");
+    try {
+      const names = signatureText.split(",").map(s => s.trim()).filter(s => s !== "");
+      await setSignatures(names);
+      toast.success("Signature wall updated!");
+      logActivity("UPDATE_SIGNATURES", `Updated ${names.length} signatures`);
     } catch (error: unknown) {
       const e = error as Error;
       toast.error(`Error: ${e.message}`);
@@ -464,7 +487,7 @@ export default function AdminPage() {
           </div>
 
           <div className="space-y-12">
-            {/* Community Photo Section - THE MISSING SECTION */}
+            {/* Community Photo Section */}
             <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-vibrant-lilac text-white rounded-xl">
@@ -488,6 +511,34 @@ export default function AdminPage() {
                   className="w-full bg-vibrant-lilac text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loadingAction === "community" ? <CircleNotch className="animate-spin" size={20} weight="bold" /> : "Update Vibe Photo"}
+                </button>
+              </form>
+            </section>
+
+            {/* Signature Wall Management */}
+            <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-watermelon-pink text-rich-charcoal rounded-xl">
+                  <PencilLine size={20} weight="fill" />
+                </div>
+                <h2 className="text-xl font-serif font-bold">Signature Wall</h2>
+              </div>
+              <form onSubmit={handleUpdateSignatures} className="space-y-4">
+                <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-widest leading-relaxed">
+                  Enter names separated by commas. These will appear blurred in the background of the "Family" section.
+                </p>
+                <textarea 
+                  value={signatureText} 
+                  onChange={e => setSignatureText(e.target.value)} 
+                  className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm h-32 focus:ring-4 focus:ring-watermelon-pink outline-none" 
+                  placeholder="Tunde, Amaka, Chidi, Joel..." 
+                />
+                <button 
+                  type="submit" 
+                  disabled={!!loadingAction}
+                  className="w-full bg-rich-charcoal text-parchment font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#F06595] text-xs uppercase flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {loadingAction === "signatures" ? <CircleNotch className="animate-spin" size={20} weight="bold" /> : "Save Signatures"}
                 </button>
               </form>
             </section>
@@ -551,7 +602,7 @@ export default function AdminPage() {
                     <h4 className="font-black text-xs uppercase">{sub.name}</h4>
                     <div className="flex flex-col gap-1 mt-1">
                       <a 
-                        href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
+                        href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxpmode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-[10px] font-black text-green-600 uppercase hover:underline"
