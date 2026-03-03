@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useBookStore } from "@/lib/store";
 import { auth, db } from "@/lib/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, User } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { 
   ArrowLeft, 
@@ -24,7 +24,7 @@ import {
   Camera
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import { motion } from "framer-motion";
 
 interface Submission {
@@ -33,11 +33,11 @@ interface Submission {
   email: string;
   whatsapp: string;
   favoriteGenre: string;
-  createdAt: any;
+  createdAt: Timestamp | null;
 }
 
 export default function AdminPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -161,7 +161,8 @@ export default function AdminPage() {
       await setCurrentBook(bookForm);
       toast.success("Spotlight updated!");
       logActivity("UPDATE_SPOTLIGHT", `Changed book to: ${bookForm.title}`);
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const e = error as Error;
       toast.error(`Error: ${e.message}`);
     } finally {
       setLoadingAction(null);
@@ -175,7 +176,8 @@ export default function AdminPage() {
       await setBadgeText(currentBadge);
       toast.success("Badge updated!");
       logActivity("UPDATE_BADGE", `Changed badge text to: ${currentBadge}`);
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const e = error as Error;
       toast.error(`Error: ${e.message}`);
     } finally {
       setLoadingAction(null);
@@ -190,7 +192,8 @@ export default function AdminPage() {
       await setActiveMembers(membersCount);
       toast.success("Stats updated!");
       logActivity("UPDATE_STATS", `Books: ${finishedCount}, Members: ${membersCount}`);
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const e = error as Error;
       toast.error(`Error: ${e.message}`);
     } finally {
       setLoadingAction(null);
@@ -204,7 +207,8 @@ export default function AdminPage() {
       await setMeetingDate(customMeetingDate);
       toast.success("Timer updated!");
       logActivity("UPDATE_TIMER", `Set next meeting to: ${customMeetingDate}`);
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const e = error as Error;
       toast.error(`Error: ${e.message}`);
     } finally {
       setLoadingAction(null);
@@ -218,7 +222,8 @@ export default function AdminPage() {
       await setCommunityImage(communityImageUrl);
       toast.success("Community vibe updated!");
       logActivity("UPDATE_COMMUNITY_IMAGE", "Changed community group photo");
-    } catch (e: any) {
+    } catch (error: unknown) {
+      const e = error as Error;
       toast.error(`Error: ${e.message}`);
     } finally {
       setLoadingAction(null);
@@ -233,9 +238,10 @@ export default function AdminPage() {
         await setCurrentBook({ id: "current", title: "TBD", author: "TBD", cover: "https://via.placeholder.com/400x600?text=Next+Pick" });
         toast.success("Archived!");
         logActivity("ARCHIVE_BOOK", `Archived: ${currentBook.title}`);
-      } catch (e: any) {
-        toast.error(`Error: ${e.message}`);
-      } finally {
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(`Error: ${e.message}`);
+    } finally {
         setLoadingAction(null);
       }
     }
@@ -303,7 +309,7 @@ export default function AdminPage() {
               <LockKey size={32} weight="fill" className="text-white" />
             </div>
             <h1 className="text-3xl font-serif font-black text-rich-charcoal">Admin Access</h1>
-            <p className="text-rich-charcoal/60 mt-2">Nigerian Bookclub Dashboard</p>
+            <p className="text-rich-charcoal/60 mt-2">ITABC Dashboard</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
@@ -437,7 +443,8 @@ export default function AdminPage() {
                   toast.success("Added!");
                   logActivity("MANUAL_ARCHIVE", `Manually added: ${pastBookForm.title}`);
                   setPastBookForm({ title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026" });
-                } catch (e: any) {
+                } catch (error: unknown) {
+                  const e = error as Error;
                   toast.error(`Error: ${e.message}`);
                 } finally {
                   setLoadingAction(null);
@@ -536,7 +543,7 @@ export default function AdminPage() {
                   <div key={sub.id} className="bg-white p-4 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] relative">
                     <button 
                       disabled={loadingAction === `delete-${sub.id}`}
-                      onClick={async () => { if (window.confirm("Delete?")) { setLoadingAction(`delete-${sub.id}`); try { await deleteDoc(doc(db, "submissions", sub.id)); toast.success("Deleted"); logActivity("DELETE_REQUEST", sub.email); } catch (e: any) { toast.error(e.message); } finally { setLoadingAction(null); } } }} 
+                      onClick={async () => { if (window.confirm("Delete?")) { setLoadingAction(`delete-${sub.id}`); try { await deleteDoc(doc(db, "submissions", sub.id)); toast.success("Deleted"); logActivity("DELETE_REQUEST", sub.email); } catch (error: unknown) { const e = error as Error; toast.error(e.message); } finally { setLoadingAction(null); } } }} 
                       className="absolute top-2 right-2 text-rich-charcoal/20 hover:text-watermelon-pink"
                     >
                       {loadingAction === `delete-${sub.id}` ? <CircleNotch className="animate-spin" /> : "×"}
@@ -544,7 +551,7 @@ export default function AdminPage() {
                     <h4 className="font-black text-xs uppercase">{sub.name}</h4>
                     <div className="flex flex-col gap-1 mt-1">
                       <a 
-                        href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You recieved this message because you signified intrest in joining Is this a bookclub. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxpmode=gi_t welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
+                        href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxpmode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-[10px] font-black text-green-600 uppercase hover:underline"
