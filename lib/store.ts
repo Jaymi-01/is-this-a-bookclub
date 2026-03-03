@@ -20,6 +20,7 @@ interface BookStore {
   booksFinished: number;
   activeMembers: number;
   communityImage: string;
+  signatures: string[];
   loading: boolean;
   
   // Actions
@@ -31,6 +32,7 @@ interface BookStore {
   setBooksFinished: (count: number) => Promise<void>;
   setActiveMembers: (count: number) => Promise<void>;
   setCommunityImage: (url: string) => Promise<void>;
+  setSignatures: (names: string[]) => Promise<void>;
 }
 
 const DEFAULT_CURRENT: Book = {
@@ -48,6 +50,7 @@ export const useBookStore = create<BookStore>((set) => ({
   booksFinished: 0,
   activeMembers: 0,
   communityImage: "https://via.placeholder.com/1200x800?text=ITABC+Community+Photo",
+  signatures: [],
   loading: true,
 
   init: () => {
@@ -62,6 +65,7 @@ export const useBookStore = create<BookStore>((set) => ({
           booksFinished: data.booksFinished ?? 0,
           activeMembers: data.activeMembers ?? 0,
           communityImage: data.communityImage || "https://via.placeholder.com/1200x800?text=ITABC+Community+Photo",
+          signatures: data.signatures || [],
           loading: false,
         });
       } else {
@@ -101,5 +105,9 @@ export const useBookStore = create<BookStore>((set) => ({
 
   setCommunityImage: async (url) => {
     await setDoc(doc(db, "siteContent", "main"), { communityImage: url }, { merge: true });
+  },
+
+  setSignatures: async (names) => {
+    await setDoc(doc(db, "siteContent", "main"), { signatures: names }, { merge: true });
   },
 }));
