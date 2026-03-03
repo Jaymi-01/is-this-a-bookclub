@@ -544,7 +544,7 @@ export default function AdminPage() {
                     <h4 className="font-black text-xs uppercase">{sub.name}</h4>
                     <div className="flex flex-col gap-1 mt-1">
                       <a 
-                        href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent("You recieved this message because you signified intrest in joining Is this a bookclub. here is the link to join the official whatsapp group chat. welcome, and we do hope you enjoy your stay. -ITABC TEAM")}`}
+                        href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You recieved this message because you signified intrest in joining Is this a bookclub. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxpmode=gi_t welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-[10px] font-black text-green-600 uppercase hover:underline"
