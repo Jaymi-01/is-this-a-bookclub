@@ -15,39 +15,39 @@ export function Archive() {
 
   return (
     <section className="py-24 md:py-32 bg-rich-charcoal relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col items-center justify-center text-center lg:grid lg:grid-cols-2 lg:text-left lg:items-center gap-16 lg:gap-24">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center justify-center text-center md:grid md:grid-cols-2 md:text-left md:items-center gap-12 lg:gap-24">
         
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="space-y-10 w-full flex flex-col items-center lg:items-start"
+          className="space-y-6 md:space-y-10 w-full flex flex-col items-center md:items-start"
         >
           <div className="inline-flex items-center gap-2 px-5 py-2 bg-watermelon-pink text-rich-charcoal font-black text-[10px] md:text-xs uppercase rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A]">
             Collection
           </div>
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif font-black text-parchment leading-[1] tracking-tighter">
-            The Interactive <br className="hidden lg:block" />
+          <h2 className="text-5xl md:text-6xl lg:text-8xl font-serif font-black text-parchment leading-[1] tracking-tighter">
+            The Interactive <br className="hidden md:block" />
             <span className="text-vibrant-lilac italic">Archive.</span>
           </h2>
           <p className="text-parchment/50 text-lg md:text-xl leading-relaxed max-w-md font-sans font-medium">
             Every story we've conquered, every debate we've had. Swipe through the history of our shared experience.
           </p>
           
-          <div className="flex flex-wrap gap-4 pt-4 justify-center lg:justify-start">
-            <div className="p-6 bg-white/5 border-2 border-white/10 rounded-[1.5rem] backdrop-blur-md min-w-[120px] md:min-w-[160px] text-center">
+          <div className="flex flex-wrap gap-4 pt-4 justify-center md:justify-start">
+            <div className="p-4 md:p-6 bg-white/5 border-2 border-white/10 rounded-[1.5rem] backdrop-blur-md min-w-[100px] md:min-w-[160px] text-center">
               <span className="block text-3xl md:text-5xl font-serif font-black text-watermelon-pink mb-1">{pastBooks.length}</span>
               <span className="text-[10px] font-black uppercase text-parchment/30 tracking-[0.2em]">Books Read</span>
             </div>
-            <div className="p-6 bg-white/5 border-2 border-white/10 rounded-[1.5rem] backdrop-blur-md min-w-[120px] md:min-w-[160px] text-center">
+            <div className="p-4 md:p-6 bg-white/5 border-2 border-white/10 rounded-[1.5rem] backdrop-blur-md min-w-[100px] md:min-w-[160px] text-center">
               <span className="block text-3xl md:text-5xl font-serif font-black text-vibrant-lilac mb-1">4.8</span>
               <span className="text-[10px] font-black uppercase text-parchment/30 tracking-[0.2em]">Avg Rating</span>
             </div>
           </div>
         </motion.div>
 
-        <div className="w-full max-w-[450px] lg:max-w-none h-[500px] md:h-[600px] flex items-center justify-center relative">
+        <div className="w-full max-w-[450px] md:max-w-none h-[450px] md:h-[600px] flex items-center justify-center relative">
           <div className="relative w-full flex items-center justify-center">
             <Swiper
               effect={"cards"}
