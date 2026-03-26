@@ -2,21 +2,34 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // 1. Membership Requests: Anyone can join, only Admin can manage
-    match /submissions/{submissionId} {
-      allow create: if true; 
-      allow read, delete, update: if request.auth != null; 
+    // Helper functions
+    function isAdmin() {
+      return request.auth != null;
     }
 
-    // 2. Global Site Content: Everyone can see, only Admin can edit
+    function isValidSubmission() {
+      let data = request.resource.data;
+      return data.name is string && data.name.size() > 2 && data.name.size() < 100
+          && data.email.matches('.*@.*\\..*')
+          && data.whatsapp.size() >= 10
+          && data.favoriteGenre in ['', 'fiction', 'mystery', 'sci-fi', 'non-fiction'];
+    }
+
+    // 1. Membership Requests: Public can create, but with validation
+    match /submissions/{submissionId} {
+      allow create: if isValidSubmission(); 
+      allow read, delete, update: if isAdmin(); 
+    }
+
+    // 2. Global Site Content: Public read, Admin write
     match /siteContent/{document=**} {
       allow read: if true; 
-      allow write: if request.auth != null;
+      allow write: if isAdmin();
     }
 
-    // 3. Activity Logs: Only Admin can read/write
+    // 3. Activity Logs: Admin only
     match /activityLogs/{logId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAdmin();
     }
   }
 }
