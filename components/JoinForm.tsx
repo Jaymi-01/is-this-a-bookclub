@@ -45,7 +45,7 @@ export function JoinForm() {
   };
 
   return (
-    <section className="py-24 md:py-32 bg-warm-sand flex flex-col items-center justify-center min-h-screen px-5 overflow-hidden">
+    <section className="py-24 md:py-32 bg-warm-sand flex flex-col items-center justify-center min-h-screen px-5 md:px-12 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -66,10 +66,11 @@ export function JoinForm() {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
               <User weight="bold" className="text-vibrant-lilac" /> Full Name
             </label>
             <input
+              id="name"
               type="text"
               required
               value={formData.name}
@@ -80,10 +81,11 @@ export function JoinForm() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
               <Envelope weight="bold" className="text-watermelon-pink" /> Email
             </label>
             <input
+              id="email"
               type="email"
               required
               value={formData.email}
@@ -94,10 +96,11 @@ export function JoinForm() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label htmlFor="whatsapp" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
               <WhatsappLogo weight="bold" className="text-green-600" /> WhatsApp
             </label>
             <input
+              id="whatsapp"
               type="tel"
               required
               value={formData.whatsapp}
@@ -108,11 +111,12 @@ export function JoinForm() {
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label htmlFor="genre" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
               <BookOpen weight="bold" className="text-forest-green" /> Genre
             </label>
             <div className="relative">
               <select
+                id="genre"
                 value={formData.favoriteGenre}
                 onChange={(e) => setFormData({ ...formData, favoriteGenre: e.target.value })}
                 className="w-full p-4 bg-white border-4 border-rich-charcoal rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all appearance-none font-bold"
