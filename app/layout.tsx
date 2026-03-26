@@ -16,8 +16,52 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Is This A Bookclub?",
-  description: "A premium book club experience featuring Nigerian literature.",
+  title: {
+    default: "Is This A Bookclub? | Premium Nigerian Book Club",
+    template: "%s | Is This A Bookclub?",
+  },
+  description: "Experience premium Nigerian literature with 'Is This A Bookclub?'. Join a curated community of readers, explore modern classics, and engage in thoughtful discussions.",
+  metadataBase: new URL("https://isthisabookclub.com"),
+  keywords: ["Nigerian literature", "book club Nigeria", "premium reading experience", "African writers", "book community"],
+  authors: [{ name: "Is This A Bookclub?" }],
+  creator: "Is This A Bookclub?",
+  publisher: "Is This A Bookclub?",
+  openGraph: {
+    type: "website",
+    locale: "en_NG",
+    url: "https://isthisabookclub.com",
+    siteName: "Is This A Bookclub?",
+    title: "Is This A Bookclub? | Premium Nigerian Book Club",
+    description: "Curated Nigerian literature and premium reading experiences.",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 600,
+        alt: "Is This A Bookclub? Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Is This A Bookclub? | Premium Nigerian Book Club",
+    description: "Curated Nigerian literature and premium reading experiences.",
+    images: ["/logo.png"],
+    creator: "@isthisabookclub",
+  },
+  manifest: "/manifest.json",
+  themeColor: "#1A1A1A",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
