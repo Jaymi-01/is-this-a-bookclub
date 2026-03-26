@@ -382,7 +382,7 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] flex items-center justify-center">
-              <img src="/logo.png" alt="ITABC" className="h-8 w-auto" />
+              <img src="/logo.png" alt="ITABC" className="h-8 w-8 rounded-full object-cover" />
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-serif font-black text-rich-charcoal leading-none">Control Center</h1>
