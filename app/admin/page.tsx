@@ -39,8 +39,6 @@ interface Submission {
 
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -130,9 +128,14 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (honeypot) return;
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
     if (cooldown > Date.now()) {
       toast.error(`Locked. Try again in ${Math.ceil((cooldown - Date.now())/1000)}s`);
       return;
@@ -347,17 +350,20 @@ export default function AdminPage() {
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">Email</label>
               <input 
-                type="email" required value={email}
-                onChange={e => setEmail(e.target.value)}
+                name="email"
+                type="email" required 
+                autoComplete="email"
                 className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-white focus:ring-4 focus:ring-vibrant-lilac outline-none"
               />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">Password</label>
               <input 
-                type="password" required value={password}
-                onChange={e => setPassword(e.target.value)}
+                name="password"
+                type="password" required 
+                autoComplete="current-password"
                 className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-white focus:ring-4 focus:ring-vibrant-lilac outline-none"
+                style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
               />
             </div>
             <button 
