@@ -61,7 +61,7 @@ export function Archive() {
                   <div className="relative h-[65%] overflow-hidden border-b-[6px] border-rich-charcoal">
                     <img
                       src={book.cover}
-                      alt={book.title}
+                      alt={`Past Book Selection: ${book.title} by ${book.author}`}
                       className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700"
                     />
                     <div className="absolute top-6 right-6 bg-watermelon-pink text-rich-charcoal w-14 h-14 rounded-full border-4 border-rich-charcoal flex flex-col items-center justify-center font-black shadow-lg">

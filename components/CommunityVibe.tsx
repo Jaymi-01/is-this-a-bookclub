@@ -19,6 +19,8 @@ export function CommunityVibe() {
         }}
       >
         <div className="absolute inset-0 bg-rich-charcoal/40 backdrop-blur-[2px]" />
+        {/* SEO Alt Text for Background Image */}
+        <img src={communityImage} alt="Members of Is This A Bookclub enjoying a reading session together" className="sr-only" />
       </div>
 
       {/* Content Container */}

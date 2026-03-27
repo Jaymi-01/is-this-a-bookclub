@@ -27,12 +27,12 @@ export function Hero() {
           </div>
 
           <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif font-black text-rich-charcoal leading-[1.1] tracking-tighter">
-            Reading is
-            <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic"> Better</span> Together.
+            Premium Nigerian <br className="hidden lg:block" />
+            <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic"> Book Club</span>.
           </h1>
 
           <p className="text-lg md:text-xl lg:text-2xl font-sans text-rich-charcoal/80 max-w-xl mx-auto md:mx-0 leading-relaxed font-medium">
-            Join a collective of curious minds as we explore <strong>{currentBook.title}</strong> by {currentBook.author}.
+            Reading is better together. Join a collective of curious minds as we explore <strong>{currentBook.title}</strong> by {currentBook.author}.
           </p>
         </motion.div>
 
@@ -46,7 +46,7 @@ export function Hero() {
           <div className="relative aspect-[3/4.5] overflow-hidden rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
             <img
               src={currentBook.cover}
-              alt={currentBook.title}
+              alt={`Monthly Book Selection: ${currentBook.title} by ${currentBook.author}`}
               className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-parchment p-5 md:p-6 border-t-4 border-rich-charcoal">
