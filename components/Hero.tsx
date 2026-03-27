@@ -28,11 +28,11 @@ export function Hero() {
 
           <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif font-black text-rich-charcoal leading-[1.1] tracking-tighter">
             Premium Nigerian <br className="hidden lg:block" />
-            <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic"> Book Club</span>.
+            <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic"> Literature Club</span>.
           </h1>
 
           <p className="text-lg md:text-xl lg:text-2xl font-sans text-rich-charcoal/80 max-w-xl mx-auto md:mx-0 leading-relaxed font-medium">
-            Reading is better together. Join a collective of curious minds as we explore <strong>{currentBook.title}</strong> by {currentBook.author}.
+            Join Nigeria&apos;s most curated <strong>book community</strong>. We celebrate African writers and modern classics through thoughtful monthly discussions. Currently reading: <strong>{currentBook.title}</strong> by {currentBook.author}.
           </p>
         </motion.div>
 

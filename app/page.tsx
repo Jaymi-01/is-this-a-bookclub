@@ -4,7 +4,7 @@ import { Hero } from "@/components/Hero";
 import { Archive } from "@/components/Archive";
 import { JoinForm } from "@/components/JoinForm";
 import { CommunityVibe } from "@/components/CommunityVibe";
-import { Books, Star, ChatsCircle, Gear } from "@phosphor-icons/react";
+import { Books, Star, ChatsCircle, Gear, InstagramLogo, Phone } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useBookStore } from "@/lib/store";
 import { useEffect } from "react";
@@ -68,9 +68,13 @@ export default function Home() {
             <h2 className="text-3xl font-serif font-bold">Is This A Bookclub?</h2>
             <p className="text-parchment/40 mt-2 font-sans">© 2026 Reading with style and coffee.</p>
           </div>
-          <div className="flex gap-8 font-black uppercase tracking-widest text-xs">
-            <a href="https://www.instagram.com/isthisabookclubhq" target="_blank" rel="noopener noreferrer" className="hover:text-vibrant-lilac transition-colors">Instagram</a>
-            <a href="tel:+2348126956275" className="hover:text-forest-green transition-colors">Call Us</a>
+          <div className="flex gap-6 items-center">
+            <a href="https://www.instagram.com/isthisabookclubhq" target="_blank" rel="noopener noreferrer" className="bg-parchment text-rich-charcoal p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] hover:translate-y-1 hover:shadow-none transition-all">
+              <InstagramLogo size={24} weight="bold" />
+            </a>
+            <a href="tel:+2348126956275" className="bg-parchment text-rich-charcoal p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#2A734D] hover:translate-y-1 hover:shadow-none transition-all">
+              <Phone size={24} weight="bold" />
+            </a>
           </div>
         </div>
       </footer>

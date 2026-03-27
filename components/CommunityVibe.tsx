@@ -56,8 +56,8 @@ export function CommunityVibe() {
           {/* Main Text */}
           <div className="relative z-10">
             <h2 className="text-4xl md:text-6xl font-serif font-black text-rich-charcoal leading-tight tracking-tighter">
-              More than just readers. <br/>
-              <span className="text-forest-green italic underline decoration-watermelon-pink decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">We're a family.</span>
+              Join the Ultimate <br/>
+              <span className="text-forest-green italic underline decoration-watermelon-pink decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">Nigerian Book Community.</span>
             </h2>
             <p className="mt-6 text-rich-charcoal/60 font-bold uppercase tracking-[0.2em] text-xs md:text-sm">
               Captured moments from the ITABC tribe
