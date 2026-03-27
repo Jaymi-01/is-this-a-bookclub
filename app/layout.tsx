@@ -82,6 +82,24 @@ export default function RootLayout({
           {children}
         </BookStoreProvider>
         <Toaster position="bottom-right" />
+        
+        {/* Organization Schema for Google */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "url": "https://isthisabookclub.com",
+              "logo": "https://isthisabookclub.com/logo.png",
+              "name": "Is This A Bookclub?",
+              "sameAs": [
+                "https://www.instagram.com/isthisabookclubhq"
+              ]
+            }),
+          }}
+        />
+
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID && (
           <>
