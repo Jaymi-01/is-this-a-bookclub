@@ -82,14 +82,14 @@ export default function RootLayout({
           {children}
         </BookStoreProvider>
         <Toaster position="bottom-right" />
-        {/* Google Analytics - Loaded lazily to ensure best site performance */}
+        {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}`}
-              strategy="lazyOnload"
+              strategy="afterInteractive"
             />
-            <Script id="google-analytics" strategy="lazyOnload">
+            <Script id="google-analytics" strategy="afterInteractive">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
@@ -97,6 +97,7 @@ export default function RootLayout({
                 gtag('config', '${process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}', {
                   page_path: window.location.pathname,
                 });
+                console.log("ITABC Analytics Initialized");
               `}
             </Script>
           </>
