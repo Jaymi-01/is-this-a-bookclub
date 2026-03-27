@@ -261,7 +261,7 @@ export default function AdminPage() {
       setLoadingAction("archiving");
       try {
         await addPastBook({ ...currentBook, id: Math.random().toString(), dateRead: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), rating: 4.5, summary: "Completed Pick." });
-        await setCurrentBook({ id: "current", title: "TBD", author: "TBD", cover: "https://via.placeholder.com/400x600?text=Next+Pick" });
+        await setCurrentBook({ id: "current", title: "TBD", author: "TBD", cover: "https://placehold.co/400x600?text=Next+Pick" });
         toast.success("Archived!");
         logActivity("ARCHIVE_BOOK", `Archived: ${currentBook.title}`);
     } catch (error: unknown) {
