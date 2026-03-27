@@ -75,20 +75,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}');
-          `}
-        </Script>
-      </head>
       <body
         className={`${libreBaskerville.variable} ${montserrat.variable} font-sans antialiased bg-background text-foreground`}
       >
@@ -96,6 +82,25 @@ export default function RootLayout({
           {children}
         </BookStoreProvider>
         <Toaster position="bottom-right" />
+        {/* Google Analytics - Loaded lazily to ensure best site performance */}
+        {process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}`}
+              strategy="lazyOnload"
+            />
+            <Script id="google-analytics" strategy="lazyOnload">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
