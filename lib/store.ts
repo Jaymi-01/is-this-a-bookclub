@@ -39,7 +39,7 @@ const DEFAULT_CURRENT: Book = {
   id: "current",
   title: "Next Pick TBD",
   author: "TBD",
-  cover: "https://via.placeholder.com/400x600?text=ITABC+Next+Pick",
+  cover: "https://placehold.co/400x600?text=ITABC+Next+Pick",
 };
 
 export const useBookStore = create<BookStore>((set) => ({
@@ -49,7 +49,7 @@ export const useBookStore = create<BookStore>((set) => ({
   badgeText: "NEXT PICK!",
   booksFinished: 0,
   activeMembers: 0,
-  communityImage: "https://via.placeholder.com/1200x800?text=ITABC+Community+Photo",
+  communityImage: "https://placehold.co/1200x800?text=ITABC+Community+Photo",
   signatures: [],
   loading: true,
 
@@ -64,7 +64,7 @@ export const useBookStore = create<BookStore>((set) => ({
           badgeText: data.badgeText || "NEXT PICK!",
           booksFinished: data.booksFinished ?? 0,
           activeMembers: data.activeMembers ?? 0,
-          communityImage: data.communityImage || "https://via.placeholder.com/1200x800?text=ITABC+Community+Photo",
+          communityImage: data.communityImage || "https://placehold.co/1200x800?text=ITABC+Community+Photo",
           signatures: data.signatures || [],
           loading: false,
         });
