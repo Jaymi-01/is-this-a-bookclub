@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Libre_Baskerville, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
@@ -15,6 +15,10 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
 });
+
+export const viewport: Viewport = {
+  themeColor: "#1A1A1A",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +55,6 @@ export const metadata: Metadata = {
     creator: "@isthisabookclub",
   },
   manifest: "/manifest.json",
-  themeColor: "#1A1A1A",
   robots: {
     index: true,
     follow: true,
