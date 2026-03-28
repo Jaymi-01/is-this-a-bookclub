@@ -22,11 +22,12 @@ import {
   Download,
   House,
   Camera,
-  PencilLine
+  PencilLine,
+  Trash
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Submission {
   id: string;
@@ -50,6 +51,7 @@ export default function AdminPage() {
 
   const { 
     currentBook, setCurrentBook, 
+    pastBooks, setPastBooks,
     addPastBook, 
     meetingDate, setMeetingDate, 
     badgeText, setBadgeText, 
@@ -69,6 +71,9 @@ export default function AdminPage() {
   const [pastBookForm, setPastBookForm] = useState({
     title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
   });
+  const [editingBookId, setEditingBookId] = useState<string | null>(null);
+  const [editBookForm, setEditBookForm] = useState<any>(null);
+
   const [customMeetingDate, setCustomMeetingDate] = useState(meetingDate);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
@@ -84,6 +89,10 @@ export default function AdminPage() {
       signOut(auth);
     };
   }, [init]);
+
+  useEffect(() => {
+    setBookForm({ ...currentBook });
+  }, [currentBook]);
 
   useEffect(() => {
     setCurrentBadge(badgeText);
@@ -104,6 +113,10 @@ export default function AdminPage() {
   useEffect(() => {
     setSignatureText(signatures.join(", "));
   }, [signatures]);
+
+  useEffect(() => {
+    setCustomMeetingDate(meetingDate);
+  }, [meetingDate]);
 
   useEffect(() => {
     if (!user) return;
@@ -270,6 +283,52 @@ export default function AdminPage() {
     } finally {
         setLoadingAction(null);
       }
+    }
+  };
+
+  const handleDeletePastBook = async (id: string) => {
+    if (window.confirm("Delete this book from archive?")) {
+      setLoadingAction(`delete-past-${id}`);
+      try {
+        const updatedBooks = pastBooks.filter(b => b.id !== id);
+        await setPastBooks(updatedBooks);
+        toast.success("Book removed from archive");
+        logActivity("DELETE_PAST_BOOK", `Removed book ID: ${id}`);
+      } catch (error: unknown) {
+        const e = error as Error;
+        toast.error(`Error: ${e.message}`);
+      } finally {
+        setLoadingAction(null);
+      }
+    }
+  };
+
+  const handleStartEdit = (book: any) => {
+    setEditingBookId(book.id);
+    setEditBookForm({ ...book });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingBookId(null);
+    setEditBookForm(null);
+  };
+
+  const handleUpdatePastBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBookId) return;
+    setLoadingAction(`update-past-${editingBookId}`);
+    try {
+      const updatedBooks = pastBooks.map(b => b.id === editingBookId ? editBookForm : b);
+      await setPastBooks(updatedBooks);
+      toast.success("Book updated!");
+      logActivity("UPDATE_PAST_BOOK", `Updated book: ${editBookForm.title}`);
+      setEditingBookId(null);
+      setEditBookForm(null);
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(`Error: ${e.message}`);
+    } finally {
+      setLoadingAction(null);
     }
   };
 
@@ -489,6 +548,130 @@ export default function AdminPage() {
                   {loadingAction === "manualArchive" ? <CircleNotch className="animate-spin" size={24} /> : "Add Past Book"}
                 </button>
               </form>
+            </section>
+
+            {/* Manage Archive */}
+            <section className="bg-white p-4 md:p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-vibrant-lilac text-white rounded-xl">
+                  <Archive size={24} weight="fill" />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-serif font-bold">Manage Archive</h2>
+                  <p className="text-[10px] md:text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">Edit or remove past books</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {pastBooks.length === 0 ? (
+                  <div className="text-center py-12 border-4 border-dashed border-rich-charcoal/10 rounded-2xl text-rich-charcoal/40 font-bold">
+                    No books in archive yet.
+                  </div>
+                ) : (
+                  pastBooks.map((book) => (
+                    <div key={book.id} className="group relative bg-parchment p-4 md:p-6 rounded-2xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#1A1A1A]">
+                      {editingBookId === book.id ? (
+                        <form onSubmit={handleUpdatePastBook} className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input 
+                              placeholder="Title" 
+                              value={editBookForm.title} 
+                              onChange={e => setEditBookForm({...editBookForm, title: e.target.value})} 
+                              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                            />
+                            <input 
+                              placeholder="Author" 
+                              value={editBookForm.author} 
+                              onChange={e => setEditBookForm({...editBookForm, author: e.target.value})} 
+                              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                            />
+                            <input 
+                              placeholder="Cover URL" 
+                              value={editBookForm.cover} 
+                              onChange={e => setEditBookForm({...editBookForm, cover: e.target.value})} 
+                              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs" 
+                            />
+                            <input 
+                              placeholder="Month" 
+                              value={editBookForm.dateRead} 
+                              onChange={e => setEditBookForm({...editBookForm, dateRead: e.target.value})} 
+                              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                            />
+                            <input 
+                              type="number" step="0.1" 
+                              value={editBookForm.rating} 
+                              onChange={e => setEditBookForm({...editBookForm, rating: parseFloat(e.target.value)})} 
+                              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                            />
+                            <textarea 
+                              placeholder="Summary" 
+                              value={editBookForm.summary} 
+                              onChange={e => setEditBookForm({...editBookForm, summary: e.target.value})} 
+                              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm" 
+                            />
+                          </div>
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <button 
+                              type="submit" 
+                              disabled={loadingAction === `update-past-${book.id}`}
+                              className="flex-1 bg-forest-green text-white font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2"
+                            >
+                              {loadingAction === `update-past-${book.id}` ? <CircleNotch className="animate-spin" /> : <FloppyDisk weight="bold" />} Save Changes
+                            </button>
+                            <button 
+                              type="button" 
+                              onClick={handleCancelEdit}
+                              className="flex-1 bg-white text-rich-charcoal font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
+                          <div className="w-20 sm:w-16 h-28 sm:h-24 shrink-0 bg-white rounded-lg border-2 border-rich-charcoal overflow-hidden shadow-[2px_2px_0px_#1A1A1A] self-center sm:self-start">
+                            <img src={book.cover} alt="" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0 w-full">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                              <div className="min-w-0">
+                                <h3 className="font-serif font-black text-lg text-rich-charcoal truncate">{book.title}</h3>
+                                <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">{book.author}</p>
+                              </div>
+                              <div className="flex gap-2 w-full sm:w-auto">
+                                <button 
+                                  onClick={() => handleStartEdit(book)}
+                                  className="flex-1 sm:flex-none p-2 bg-white text-rich-charcoal rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center"
+                                >
+                                  <PencilLine size={18} weight="bold" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDeletePastBook(book.id)}
+                                  disabled={loadingAction === `delete-past-${book.id}`}
+                                  className="flex-1 sm:flex-none p-2 bg-watermelon-pink text-white rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center"
+                                >
+                                  {loadingAction === `delete-past-${book.id}` ? <CircleNotch className="animate-spin" size={18} /> : <Trash size={18} weight="bold" />}
+                                </button>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex flex-wrap items-center gap-2 md:gap-4">
+                              <span className="inline-flex items-center gap-1 text-[9px] md:text-[10px] font-black text-vibrant-lilac uppercase bg-vibrant-lilac/10 px-2 py-0.5 rounded-full border border-vibrant-lilac/20">
+                                <Calendar size={12} weight="bold" /> {book.dateRead}
+                              </span>
+                              <span className="text-[9px] md:text-[10px] font-black text-watermelon-pink uppercase bg-watermelon-pink/10 px-2 py-0.5 rounded-full border border-watermelon-pink/20">
+                                ★ {book.rating}
+                              </span>
+                            </div>
+                            <p className="mt-3 text-xs text-rich-charcoal/60 line-clamp-2 md:line-clamp-3 italic font-medium leading-relaxed">
+                              {book.summary}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
             </section>
           </div>
 
