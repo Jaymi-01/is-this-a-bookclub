@@ -27,6 +27,7 @@ interface BookStore {
   init: () => void;
   setCurrentBook: (book: Book) => Promise<void>;
   addPastBook: (book: Book) => Promise<void>;
+  setPastBooks: (books: Book[]) => Promise<void>;
   setMeetingDate: (date: string) => Promise<void>;
   setBadgeText: (text: string) => Promise<void>;
   setBooksFinished: (count: number) => Promise<void>;
@@ -87,7 +88,7 @@ export const useBookStore = create<BookStore>((set) => ({
     }, { merge: true });
   },
 
-  setPastBooks: async (books) => {
+  setPastBooks: async (books: Book[]) => {
     await setDoc(doc(db, "siteContent", "main"), {
       pastBooks: books
     }, { merge: true });
