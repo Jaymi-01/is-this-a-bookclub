@@ -87,6 +87,12 @@ export const useBookStore = create<BookStore>((set) => ({
     }, { merge: true });
   },
 
+  setPastBooks: async (books) => {
+    await setDoc(doc(db, "siteContent", "main"), {
+      pastBooks: books
+    }, { merge: true });
+  },
+
   setMeetingDate: async (date) => {
     await setDoc(doc(db, "siteContent", "main"), { meetingDate: date }, { merge: true });
   },
