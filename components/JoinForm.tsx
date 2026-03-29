@@ -14,10 +14,26 @@ export function JoinForm() {
     whatsapp: "",
     favoriteGenre: "",
   });
+  const [honeypot, setHoneypot] = useState("");
+  const [lastSubmitted, setLastSubmitted] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 1. Honeypot check: Bots will fill this out, humans won't.
+    if (honeypot) {
+      console.log("Bot detected!");
+      return;
+    }
+
+    // 2. Simple Rate Limit: Wait 30 seconds between submissions from the same session.
+    const now = Date.now();
+    if (now - lastSubmitted < 30000) {
+      toast.error("Please wait a moment before sending another request.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -36,6 +52,7 @@ export function JoinForm() {
         },
       });
       setFormData({ name: "", email: "", whatsapp: "", favoriteGenre: "" });
+      setLastSubmitted(now);
     } catch (error) {
       console.error("Error adding document: ", error);
       toast.error("Something went wrong. Please try again.");
@@ -65,6 +82,18 @@ export function JoinForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Honeypot field (hidden from humans) */}
+          <div className="hidden">
+            <label htmlFor="website">Don't fill this out if you're human</label>
+            <input 
+              id="website"
+              type="text" 
+              autoComplete="off"
+              value={honeypot} 
+              onChange={(e) => setHoneypot(e.target.value)} 
+            />
+          </div>
+
           <div className="space-y-3">
             <label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
               <User weight="bold" className="text-vibrant-lilac" /> Full Name
