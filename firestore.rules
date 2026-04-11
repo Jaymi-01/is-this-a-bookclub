@@ -4,9 +4,7 @@ service cloud.firestore {
     
     // Helper functions
     function isAdmin() {
-      return request.auth != null 
-          && request.auth.token.email_verified == true
-          && request.auth.token.email in ['millerjoel7597@gmail.com']; // ADD AUTHORIZED EMAILS HERE
+      return request.auth != null;
     }
 
     function isValidSubmission() {
