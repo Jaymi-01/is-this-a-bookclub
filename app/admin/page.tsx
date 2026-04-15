@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useBookStore } from "@/lib/store";
 import { auth, db } from "@/lib/firebase";
+import { Book } from "@/lib/data";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, User } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { 
@@ -72,7 +73,7 @@ export default function AdminPage() {
     title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
   });
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
-  const [editBookForm, setEditBookForm] = useState<any>(null);
+  const [editBookForm, setEditBookForm] = useState<Book | null>(null);
 
   const [customMeetingDate, setCustomMeetingDate] = useState(meetingDate);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -303,7 +304,7 @@ export default function AdminPage() {
     }
   };
 
-  const handleStartEdit = (book: any) => {
+  const handleStartEdit = (book: Book) => {
     setEditingBookId(book.id);
     setEditBookForm({ ...book });
   };
@@ -315,7 +316,7 @@ export default function AdminPage() {
 
   const handleUpdatePastBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingBookId) return;
+    if (!editingBookId || !editBookForm) return;
     setLoadingAction(`update-past-${editingBookId}`);
     try {
       const updatedBooks = pastBooks.map(b => b.id === editingBookId ? editBookForm : b);
@@ -570,7 +571,7 @@ export default function AdminPage() {
                 ) : (
                   pastBooks.map((book) => (
                     <div key={book.id} className="group relative bg-parchment p-4 md:p-6 rounded-2xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#1A1A1A]">
-                      {editingBookId === book.id ? (
+                      {(editingBookId === book.id && editBookForm) ? (
                         <form onSubmit={handleUpdatePastBook} className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input 
