@@ -14,9 +14,34 @@ export function JoinForm() {
     whatsapp: "",
     favoriteGenre: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [honeypot, setHoneypot] = useState("");
   const [lastSubmitted, setLastSubmitted] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (formData.name.trim().length < 2) {
+      newErrors.name = "Please enter your full name (at least 2 characters).";
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    const phoneRegex = /^\+?[0-9]{10,15}$/;
+    if (!phoneRegex.test(formData.whatsapp.replace(/\s/g, ""))) {
+      newErrors.whatsapp = "Please enter a valid WhatsApp number (e.g., +234...).";
+    }
+
+    if (!formData.favoriteGenre) {
+      newErrors.favoriteGenre = "Please select your favorite genre.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +52,13 @@ export function JoinForm() {
       return;
     }
 
-    // 2. Simple Rate Limit: Wait 30 seconds between submissions from the same session.
+    // 2. Custom Validation
+    if (!validate()) {
+      toast.error("Please fix the errors in the form.");
+      return;
+    }
+
+    // 3. Simple Rate Limit: Wait 30 seconds between submissions from the same session.
     const now = Date.now();
     if (now - lastSubmitted < 30000) {
       toast.error("Please wait a moment before sending another request.");
@@ -101,12 +132,12 @@ export function JoinForm() {
             <input
               id="name"
               type="text"
-              required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full p-4 bg-white border-4 border-rich-charcoal rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold"
+              className={`w-full p-4 bg-white border-4 ${errors.name ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="Jane Doe"
             />
+            {errors.name && <p className="text-watermelon-pink text-xs font-bold">{errors.name}</p>}
           </div>
 
           <div className="space-y-3">
@@ -116,12 +147,12 @@ export function JoinForm() {
             <input
               id="email"
               type="email"
-              required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full p-4 bg-white border-4 border-rich-charcoal rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold"
+              className={`w-full p-4 bg-white border-4 ${errors.email ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="jane@itabc.club"
             />
+            {errors.email && <p className="text-watermelon-pink text-xs font-bold">{errors.email}</p>}
           </div>
 
           <div className="space-y-3">
@@ -131,12 +162,13 @@ export function JoinForm() {
             <input
               id="whatsapp"
               type="tel"
-              required
               value={formData.whatsapp}
               onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-              className="w-full p-4 bg-white border-4 border-rich-charcoal rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold"
+              className={`w-full p-4 bg-white border-4 ${errors.whatsapp ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="+234..."
             />
+            <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-wider">Please provide a reachable WhatsApp number.</p>
+            {errors.whatsapp && <p className="text-watermelon-pink text-xs font-bold">{errors.whatsapp}</p>}
           </div>
 
           <div className="space-y-3">
@@ -148,7 +180,7 @@ export function JoinForm() {
                 id="genre"
                 value={formData.favoriteGenre}
                 onChange={(e) => setFormData({ ...formData, favoriteGenre: e.target.value })}
-                className="w-full p-4 bg-white border-4 border-rich-charcoal rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all appearance-none font-bold"
+                className={`w-full p-4 bg-white border-4 ${errors.favoriteGenre ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all appearance-none font-bold`}
               >
                 <option value="">Select genre...</option>
                 <option value="fiction">Literary Fiction</option>
@@ -157,6 +189,7 @@ export function JoinForm() {
                 <option value="non-fiction">Non-Fiction</option>
               </select>
             </div>
+            {errors.favoriteGenre && <p className="text-watermelon-pink text-xs font-bold">{errors.favoriteGenre}</p>}
           </div>
 
           <motion.button
