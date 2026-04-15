@@ -62,13 +62,13 @@ export default function Home() {
       <JoinForm />
 
       {/* Footer */}
-      <footer className="bg-rich-charcoal text-parchment py-12 px-6 md:px-12 border-t-4 border-vibrant-lilac">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <footer className="bg-rich-charcoal text-parchment py-16 px-6 md:px-12 border-t-4 border-vibrant-lilac text-center">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-8">
           <div>
-            <h2 className="text-3xl font-serif font-bold">Is This A Bookclub?</h2>
-            <p className="text-parchment/40 mt-2 font-sans">© 2026 Reading with style and coffee.</p>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold">Is This A Bookclub?</h2>
+            <p className="text-parchment/40 mt-3 font-sans max-w-sm mx-auto">© {new Date().getFullYear()} Is This A Bookclub. All rights reserved.</p>
           </div>
-          <div className="flex gap-6 items-center">
+          <div className="flex gap-6 items-center justify-center">
             <a href="https://www.instagram.com/isthisabookclubhq" target="_blank" rel="noopener noreferrer" className="bg-parchment text-rich-charcoal p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] hover:translate-y-1 hover:shadow-none transition-all">
               <InstagramLogo size={24} weight="bold" />
             </a>
