@@ -798,6 +798,12 @@ export default function AdminPage() {
                       >
                         <WhatsappLogo weight="fill" /> Invite to WhatsApp
                       </a>
+                      <a 
+                        href={`mailto:${sub.email}?subject=${encodeURIComponent("Welcome to Is This A Bookclub?")}&body=${encodeURIComponent(`Hi ${sub.name},\n\nYou received this message because you signified interest in joining Is This A Bookclub.\n\nHere is the link to join the official WhatsApp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t\n\nWelcome, and we do hope you enjoy your stay.\n\n- ITABC TEAM`)}`}
+                        className="inline-flex items-center gap-1 text-[10px] font-black text-watermelon-pink uppercase hover:underline"
+                      >
+                        <Envelope weight="fill" /> Invite to Email
+                      </a>
                       <div className="text-[9px] font-bold text-rich-charcoal/40 truncate">{sub.email}</div>
                     </div>
                   </div>
