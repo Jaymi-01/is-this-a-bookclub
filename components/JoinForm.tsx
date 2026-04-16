@@ -93,7 +93,7 @@ export function JoinForm() {
   };
 
   return (
-    <section className="py-24 md:py-32 bg-warm-sand flex flex-col items-center justify-center min-h-screen px-5 md:px-12 overflow-hidden">
+    <section className="py-24 md:py-32 bg-warm-sand flex flex-col items-center justify-center min-h-screen px-6 md:px-12 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
