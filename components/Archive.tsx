@@ -14,8 +14,8 @@ export function Archive() {
   const { pastBooks } = useBookStore();
 
   return (
-    <section className="py-24 md:py-32 bg-rich-charcoal relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center justify-center text-center md:grid md:grid-cols-2 md:text-left md:items-center gap-12 lg:gap-24">
+    <section className="py-24 md:py-32 bg-rich-charcoal relative overflow-hidden px-6 md:px-12">
+      <div className="max-w-7xl mx-auto flex flex-col items-center justify-center text-center md:grid md:grid-cols-2 md:text-left md:items-center gap-12 lg:gap-24">
         
         <motion.div
           initial={{ opacity: 0, y: 50 }}
