@@ -9,12 +9,12 @@ export function Hero() {
   const { currentBook, badgeText } = useBookStore();
 
   return (
-    <section className="min-h-screen flex flex-col items-center pt-32 pb-20 px-4 md:px-12 bg-warm-sand relative">
+    <section className="min-h-screen flex flex-col items-center pt-32 pb-20 px-6 md:px-12 bg-warm-sand relative">
       {/* Decorative Elements */}
       <div className="absolute top-20 right-[-100px] w-96 h-96 bg-vibrant-lilac/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-[-100px] w-96 h-96 bg-forest-green/10 rounded-full blur-3xl" />
 
-      <div className="flex flex-col md:flex-row items-center gap-10 md:gap-12 lg:gap-16 w-full max-w-7xl z-10 mb-20">
+      <div className="flex flex-col md:flex-row items-center gap-10 md:gap-12 lg:gap-16 w-full max-w-7xl mx-auto z-10 mb-20">
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
