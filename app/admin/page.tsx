@@ -77,6 +77,22 @@ export default function AdminPage() {
 
   const [customMeetingDate, setCustomMeetingDate] = useState(meetingDate);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [deleteConfirmData, setDeleteConfirmData] = useState<{id: string, email: string} | null>(null);
+
+  const handleDeleteRequest = async (id: string, email: string) => {
+    setLoadingAction(`delete-${id}`);
+    try {
+      await deleteDoc(doc(db, "submissions", id));
+      toast.success("Request deleted successfully");
+      logActivity("DELETE_REQUEST", email);
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(e.message);
+    } finally {
+      setLoadingAction(null);
+      setDeleteConfirmData(null);
+    }
+  };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -784,10 +800,10 @@ export default function AdminPage() {
                   <div key={sub.id} className="bg-white p-4 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] relative">
                     <button 
                       disabled={loadingAction === `delete-${sub.id}`}
-                      onClick={async () => { if (window.confirm("Delete?")) { setLoadingAction(`delete-${sub.id}`); try { await deleteDoc(doc(db, "submissions", sub.id)); toast.success("Deleted"); logActivity("DELETE_REQUEST", sub.email); } catch (error: unknown) { const e = error as Error; toast.error(e.message); } finally { setLoadingAction(null); } } }} 
-                      className="absolute top-2 right-2 text-rich-charcoal/20 hover:text-watermelon-pink"
+                      onClick={() => setDeleteConfirmData({ id: sub.id, email: sub.email })}
+                      className="absolute top-2 right-2 text-rich-charcoal/20 hover:text-watermelon-pink transition-colors"
                     >
-                      {loadingAction === `delete-${sub.id}` ? <CircleNotch className="animate-spin" /> : "×"}
+                      {loadingAction === `delete-${sub.id}` ? <CircleNotch className="animate-spin" /> : <Trash weight="bold" size={18} />}
                     </button>
                     <h4 className="font-black text-xs uppercase">{sub.name}</h4>
                     <div className="flex flex-col gap-1 mt-1">
@@ -819,6 +835,42 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {deleteConfirmData && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-rich-charcoal/40 backdrop-blur-sm">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-sm bg-parchment p-8 rounded-[2rem] border-4 border-rich-charcoal shadow-[12px_12px_0px_#1A1A1A] text-center"
+            >
+              <div className="w-16 h-16 bg-watermelon-pink/10 text-watermelon-pink rounded-2xl border-2 border-watermelon-pink flex items-center justify-center mx-auto mb-6">
+                <Trash size={32} weight="fill" />
+              </div>
+              <h3 className="text-xl font-serif font-black text-rich-charcoal mb-2">Confirm Deletion</h3>
+              <p className="text-sm font-medium text-rich-charcoal/60 mb-8 leading-relaxed">
+                Are you sure you want to remove <span className="font-bold text-rich-charcoal">{deleteConfirmData.email}</span> from the join requests?
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => setDeleteConfirmData(null)}
+                  className="py-3 bg-white text-rich-charcoal font-black rounded-xl border-2 border-rich-charcoal hover:bg-parchment transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => handleDeleteRequest(deleteConfirmData.id, deleteConfirmData.email)}
+                  disabled={!!loadingAction}
+                  className="py-3 bg-watermelon-pink text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] hover:shadow-none hover:translate-y-[4px] transition-all disabled:opacity-50"
+                >
+                  {loadingAction?.startsWith('delete-') ? <CircleNotch className="animate-spin mx-auto" size={20} /> : "Delete"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
