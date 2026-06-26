@@ -5,9 +5,7 @@ import { useBookStore } from "@/lib/store";
 import { auth, db } from "@/lib/firebase";
 import { Book } from "@/lib/data";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, User } from "firebase/auth";
-import { toast } from "react-hot-toast";
 import { 
-  ArrowLeft, 
   BookOpen, 
   Calendar, 
   Plus, 
@@ -24,11 +22,14 @@ import {
   House,
   Camera,
   PencilLine,
-  Trash
+  Trash,
+  DotsSix
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
-import { motion, AnimatePresence } from "framer-motion";
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp, QuerySnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
+import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
+
+import { toast } from "sonner";
 
 interface Submission {
   id: string;
@@ -74,10 +75,33 @@ export default function AdminPage() {
   });
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
   const [editBookForm, setEditBookForm] = useState<Book | null>(null);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [archiveForm, setArchiveForm] = useState<Book | null>(null);
 
   const [customMeetingDate, setCustomMeetingDate] = useState(meetingDate);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [deleteConfirmData, setDeleteConfirmData] = useState<{id: string, email: string} | null>(null);
+
+  const [localPastBooks, setLocalPastBooks] = useState<Book[]>([]);
+
+  useEffect(() => {
+    setLocalPastBooks(pastBooks);
+  }, [pastBooks]);
+
+  const handleReorder = (newOrder: Book[]) => {
+    setLocalPastBooks(newOrder);
+  };
+
+  const handleDragEnd = async () => {
+    try {
+      await setPastBooks(localPastBooks);
+      toast.success("Archive order updated!");
+      logActivity("REORDER_ARCHIVE", `Reordered past books`);
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(`Failed to save order: ${e.message}`);
+    }
+  };
 
   const handleDeleteRequest = async (id: string, email: string) => {
     setLoadingAction(`delete-${id}`);
@@ -141,8 +165,8 @@ export default function AdminPage() {
   useEffect(() => {
     if (!user) return;
     const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setSubmissions(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Submission)));
+    const unsubscribe = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
+      setSubmissions(snapshot.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as Submission)));
     });
     return () => unsubscribe();
   }, [user]);
@@ -181,7 +205,7 @@ export default function AdminPage() {
       setFailedAttempts(0);
       toast.success("Authorized");
       logActivity("LOGIN", "Admin logged in successfully");
-    } catch (error) {
+    } catch {
       const attempts = failedAttempts + 1;
       setFailedAttempts(attempts);
       if (attempts >= 3) {
@@ -289,20 +313,35 @@ export default function AdminPage() {
     }
   };
 
-  const handleArchiveCurrent = async () => {
-    if (window.confirm("Move to archive?")) {
-      setLoadingAction("archiving");
-      try {
-        await addPastBook({ ...currentBook, id: Math.random().toString(), dateRead: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), rating: 4.5, summary: "Completed Pick." });
-        await setCurrentBook({ id: "current", title: "TBD", author: "TBD", cover: "https://placehold.co/400x600?text=Next+Pick" });
-        toast.success("Archived!");
-        logActivity("ARCHIVE_BOOK", `Archived: ${currentBook.title}`);
+  const handleOpenArchiveModal = () => {
+    setArchiveForm({
+      id: Math.random().toString(),
+      title: currentBook.title,
+      author: currentBook.author,
+      cover: currentBook.cover,
+      dateRead: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      rating: 4.5,
+      summary: "Completed Pick."
+    });
+    setIsArchiveModalOpen(true);
+  };
+
+  const handleConfirmArchive = async () => {
+    if (!archiveForm) return;
+    setLoadingAction("archiving");
+    try {
+      const ratingVal = isNaN(archiveForm.rating ?? 0) ? 0 : archiveForm.rating;
+      await addPastBook({ ...archiveForm, rating: ratingVal });
+      await setCurrentBook({ id: "current", title: "TBD", author: "TBD", cover: "https://placehold.co/400x600?text=Next+Pick" });
+      toast.success("Archived!");
+      logActivity("ARCHIVE_BOOK", `Archived: ${archiveForm.title}`);
+      setIsArchiveModalOpen(false);
+      setArchiveForm(null);
     } catch (error: unknown) {
       const e = error as Error;
       toast.error(`Error: ${e.message}`);
     } finally {
-        setLoadingAction(null);
-      }
+      setLoadingAction(null);
     }
   };
 
@@ -338,7 +377,13 @@ export default function AdminPage() {
     if (!editingBookId || !editBookForm) return;
     setLoadingAction(`update-past-${editingBookId}`);
     try {
-      const updatedBooks = pastBooks.map(b => b.id === editingBookId ? editBookForm : b);
+      const updatedBooks = pastBooks.map(b => {
+        if (b.id === editingBookId) {
+          const ratingVal = isNaN(editBookForm.rating ?? 0) ? 0 : editBookForm.rating;
+          return { ...editBookForm, rating: ratingVal };
+        }
+        return b;
+      });
       await setPastBooks(updatedBooks);
       toast.success("Book updated!");
       logActivity("UPDATE_PAST_BOOK", `Updated book: ${editBookForm.title}`);
@@ -503,8 +548,8 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <button 
-                    onClick={handleArchiveCurrent} 
-                    disabled={loadingAction === "archiving"}
+                    onClick={handleOpenArchiveModal} 
+                    disabled={loadingAction === "archiving" || isArchiveModalOpen}
                     className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#F06595] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all disabled:opacity-50"
                   >
                     {loadingAction === "archiving" ? <CircleNotch className="animate-spin" /> : <Archive weight="bold" />} Archive Current Read
@@ -548,7 +593,8 @@ export default function AdminPage() {
                   e.preventDefault();
                   setLoadingAction("manualArchive");
                   try {
-                    await addPastBook({ ...pastBookForm, id: Math.random().toString() });
+                    const ratingVal = isNaN(pastBookForm.rating ?? 0) ? 0 : pastBookForm.rating;
+                    await addPastBook({ ...pastBookForm, rating: ratingVal, id: Math.random().toString() });
                     toast.success("Added!");
                     logActivity("MANUAL_ARCHIVE", `Manually added: ${pastBookForm.title}`);
                     setPastBookForm({ title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026" });
@@ -584,113 +630,28 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-6">
-                  {pastBooks.length === 0 ? (
+                  {localPastBooks.length === 0 ? (
                     <div className="text-center py-12 border-4 border-dashed border-rich-charcoal/10 rounded-2xl text-rich-charcoal/40 font-bold">
                       No books in archive yet.
                     </div>
                   ) : (
-                    pastBooks.map((book) => (
-                      <div key={book.id} className="group relative bg-parchment p-4 md:p-6 rounded-2xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#1A1A1A]">
-                        {(editingBookId === book.id && editBookForm) ? (
-                          <form onSubmit={handleUpdatePastBook} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <input 
-                                placeholder="Title" 
-                                value={editBookForm.title} 
-                                onChange={e => setEditBookForm({...editBookForm, title: e.target.value})} 
-                                className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
-                              />
-                              <input 
-                                placeholder="Author" 
-                                value={editBookForm.author} 
-                                onChange={e => setEditBookForm({...editBookForm, author: e.target.value})} 
-                                className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
-                              />
-                              <input 
-                                placeholder="Cover URL" 
-                                value={editBookForm.cover} 
-                                onChange={e => setEditBookForm({...editBookForm, cover: e.target.value})} 
-                                className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs" 
-                              />
-                              <input 
-                                placeholder="Month" 
-                                value={editBookForm.dateRead} 
-                                onChange={e => setEditBookForm({...editBookForm, dateRead: e.target.value})} 
-                                className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
-                              />
-                              <input 
-                                type="number" step="0.1" 
-                                value={editBookForm.rating} 
-                                onChange={e => setEditBookForm({...editBookForm, rating: parseFloat(e.target.value)})} 
-                                className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
-                              />
-                              <textarea 
-                                placeholder="Summary" 
-                                value={editBookForm.summary} 
-                                onChange={e => setEditBookForm({...editBookForm, summary: e.target.value})} 
-                                className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm" 
-                              />
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-3">
-                              <button 
-                                type="submit" 
-                                disabled={loadingAction === `update-past-${book.id}`}
-                                className="flex-1 bg-forest-green text-white font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2"
-                              >
-                                {loadingAction === `update-past-${book.id}` ? <CircleNotch className="animate-spin" /> : <FloppyDisk weight="bold" />} Save Changes
-                              </button>
-                              <button 
-                                type="button" 
-                                onClick={handleCancelEdit}
-                                className="flex-1 bg-white text-rich-charcoal font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </form>
-                        ) : (
-                          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
-                            <div className="w-20 sm:w-16 h-28 sm:h-24 shrink-0 bg-white rounded-lg border-2 border-rich-charcoal overflow-hidden shadow-[2px_2px_0px_#1A1A1A] self-center sm:self-start">
-                              <img src={book.cover} alt="" className="w-full h-full object-cover" />
-                            </div>
-                            <div className="flex-1 min-w-0 w-full">
-                              <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-                                <div className="min-w-0">
-                                  <h3 className="font-serif font-black text-lg text-rich-charcoal truncate">{book.title}</h3>
-                                  <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">{book.author}</p>
-                                </div>
-                                <div className="flex gap-2 w-full sm:w-auto">
-                                  <button 
-                                    onClick={() => handleStartEdit(book)}
-                                    className="flex-1 sm:flex-none p-2 bg-white text-rich-charcoal rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center"
-                                  >
-                                    <PencilLine size={18} weight="bold" />
-                                  </button>
-                                  <button 
-                                    onClick={() => handleDeletePastBook(book.id)}
-                                    disabled={loadingAction === `delete-past-${book.id}`}
-                                    className="flex-1 sm:flex-none p-2 bg-watermelon-pink text-white rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center"
-                                  >
-                                    {loadingAction === `delete-past-${book.id}` ? <CircleNotch className="animate-spin" size={18} /> : <Trash size={18} weight="bold" />}
-                                  </button>
-                                </div>
-                              </div>
-                              <div className="mt-3 flex flex-wrap items-center gap-2 md:gap-4">
-                                <span className="inline-flex items-center gap-1 text-[9px] md:text-[10px] font-black text-vibrant-lilac uppercase bg-vibrant-lilac/10 px-2 py-0.5 rounded-full border border-vibrant-lilac/20">
-                                  <Calendar size={12} weight="bold" /> {book.dateRead}
-                                </span>
-                                <span className="text-[9px] md:text-[10px] font-black text-watermelon-pink uppercase bg-watermelon-pink/10 px-2 py-0.5 rounded-full border border-watermelon-pink/20">
-                                  ★ {book.rating}
-                                </span>
-                              </div>
-                              <p className="mt-3 text-xs text-rich-charcoal/60 line-clamp-2 md:line-clamp-3 italic font-medium leading-relaxed">
-                                {book.summary}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))
+                    <Reorder.Group axis="y" values={localPastBooks} onReorder={handleReorder} className="space-y-6">
+                      {localPastBooks.map((book) => (
+                        <ReorderableBookItem
+                          key={book.id}
+                          book={book}
+                          editingBookId={editingBookId}
+                          editBookForm={editBookForm}
+                          loadingAction={loadingAction}
+                          onStartEdit={handleStartEdit}
+                          onCancelEdit={handleCancelEdit}
+                          onUpdatePastBook={handleUpdatePastBook}
+                          onDeletePastBook={handleDeletePastBook}
+                          setEditBookForm={setEditBookForm}
+                          onDragEnd={handleDragEnd}
+                        />
+                      ))}
+                    </Reorder.Group>
                   )}
                 </div>
               </section>
@@ -842,6 +803,99 @@ export default function AdminPage() {
       </div>
 
       <AnimatePresence>
+        {isArchiveModalOpen && archiveForm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-rich-charcoal/40 backdrop-blur-sm">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-xl bg-parchment rounded-[2rem] border-4 border-rich-charcoal shadow-[12px_12px_0px_#1A1A1A] max-h-[85vh] flex flex-col overflow-hidden"
+            >
+              {/* Fixed Header */}
+              <div className="p-6 md:p-8 pb-4 border-b-2 border-dashed border-rich-charcoal/10 shrink-0">
+                <h3 className="text-2xl font-serif font-black text-rich-charcoal mb-2">Archive Current Read</h3>
+                <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">Review and edit details before archiving</p>
+              </div>
+
+              {/* Scrollable Form Body */}
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 pt-4 pb-4 custom-scrollbar">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Title</label>
+                    <input 
+                      value={archiveForm.title} 
+                      onChange={e => setArchiveForm({...archiveForm, title: e.target.value})} 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Author</label>
+                    <input 
+                      value={archiveForm.author} 
+                      onChange={e => setArchiveForm({...archiveForm, author: e.target.value})} 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 sm:col-span-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Cover URL</label>
+                    <input 
+                      value={archiveForm.cover} 
+                      onChange={e => setArchiveForm({...archiveForm, cover: e.target.value})} 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Month (Date Read)</label>
+                    <input 
+                      value={archiveForm.dateRead} 
+                      onChange={e => setArchiveForm({...archiveForm, dateRead: e.target.value})} 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Rating</label>
+                    <input 
+                      type="number" step="0.1"
+                      value={archiveForm.rating} 
+                      onChange={e => setArchiveForm({...archiveForm, rating: parseFloat(e.target.value)})} 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2 sm:col-span-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Summary</label>
+                    <textarea 
+                      value={archiveForm.summary} 
+                      onChange={e => setArchiveForm({...archiveForm, summary: e.target.value})} 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm" 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Fixed Footer */}
+              <div className="p-6 md:p-8 pt-4 border-t-2 border-dashed border-rich-charcoal/10 shrink-0">
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    type="button"
+                    onClick={() => { setIsArchiveModalOpen(false); setArchiveForm(null); }}
+                    className="py-3 bg-white text-rich-charcoal font-black rounded-xl border-2 border-rich-charcoal hover:bg-parchment transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={handleConfirmArchive}
+                    disabled={loadingAction === "archiving"}
+                    className="py-3 bg-forest-green text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] hover:shadow-none hover:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loadingAction === "archiving" ? <CircleNotch className="animate-spin" size={20} /> : "Archive"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         {deleteConfirmData && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-rich-charcoal/40 backdrop-blur-sm">
             <motion.div 
@@ -877,5 +931,156 @@ export default function AdminPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+interface ReorderableBookItemProps {
+  book: Book;
+  editingBookId: string | null;
+  editBookForm: Book | null;
+  loadingAction: string | null;
+  onStartEdit: (book: Book) => void;
+  onCancelEdit: () => void;
+  onUpdatePastBook: (e: React.FormEvent) => void;
+  onDeletePastBook: (id: string) => void;
+  setEditBookForm: (form: Book) => void;
+  onDragEnd: () => void;
+}
+
+function ReorderableBookItem({
+  book,
+  editingBookId,
+  editBookForm,
+  loadingAction,
+  onStartEdit,
+  onCancelEdit,
+  onUpdatePastBook,
+  onDeletePastBook,
+  setEditBookForm,
+  onDragEnd
+}: ReorderableBookItemProps) {
+  const controls = useDragControls();
+  const isEditing = editingBookId === book.id;
+
+  return (
+    <Reorder.Item
+      value={book}
+      dragListener={false}
+      dragControls={controls}
+      onDragEnd={onDragEnd}
+      className="group relative bg-parchment p-4 md:p-6 rounded-2xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] transition-all select-none"
+      style={{ position: "relative" }}
+    >
+      {isEditing && editBookForm ? (
+        <form onSubmit={onUpdatePastBook} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input 
+              placeholder="Title" 
+              value={editBookForm.title} 
+              onChange={e => setEditBookForm({...editBookForm, title: e.target.value})} 
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            />
+            <input 
+              placeholder="Author" 
+              value={editBookForm.author} 
+              onChange={e => setEditBookForm({...editBookForm, author: e.target.value})} 
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            />
+            <input 
+              placeholder="Cover URL" 
+              value={editBookForm.cover} 
+              onChange={e => setEditBookForm({...editBookForm, cover: e.target.value})} 
+              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs" 
+            />
+            <input 
+              placeholder="Month" 
+              value={editBookForm.dateRead} 
+              onChange={e => setEditBookForm({...editBookForm, dateRead: e.target.value})} 
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            />
+            <input 
+              type="number" step="0.1" 
+              value={editBookForm.rating} 
+              onChange={e => setEditBookForm({...editBookForm, rating: parseFloat(e.target.value)})} 
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            />
+            <textarea 
+              placeholder="Summary" 
+              value={editBookForm.summary} 
+              onChange={e => setEditBookForm({...editBookForm, summary: e.target.value})} 
+              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm" 
+            />
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button 
+              type="submit" 
+              disabled={loadingAction === `update-past-${book.id}`}
+              className="flex-1 bg-forest-green text-white font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2"
+            >
+              {loadingAction === `update-past-${book.id}` ? <CircleNotch className="animate-spin" /> : <FloppyDisk weight="bold" />} Save Changes
+            </button>
+            <button 
+              type="button" 
+              onClick={onCancelEdit}
+              className="flex-1 bg-white text-rich-charcoal font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="flex gap-4 items-center">
+          {/* Drag Handle */}
+          <div 
+            onPointerDown={(e) => controls.start(e)}
+            className="cursor-grab active:cursor-grabbing p-2 hover:bg-rich-charcoal/5 rounded-lg border-2 border-transparent hover:border-rich-charcoal/10 transition-all text-rich-charcoal/40 hover:text-rich-charcoal shrink-0"
+            style={{ touchAction: "none" }}
+            title="Drag to reorder"
+          >
+            <DotsSix size={24} weight="bold" />
+          </div>
+
+          <div className="flex-1 min-w-0 flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
+            <div className="w-20 sm:w-16 h-28 sm:h-24 shrink-0 bg-white rounded-lg border-2 border-rich-charcoal overflow-hidden shadow-[2px_2px_0px_#1A1A1A] self-center sm:self-start">
+              <img src={book.cover} alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                <div className="min-w-0">
+                  <h3 className="font-serif font-black text-lg text-rich-charcoal truncate">{book.title}</h3>
+                  <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">{book.author}</p>
+                </div>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button 
+                    onClick={() => onStartEdit(book)}
+                    className="flex-1 sm:flex-none p-2 bg-white text-rich-charcoal rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center"
+                  >
+                    <PencilLine size={18} weight="bold" />
+                  </button>
+                  <button 
+                    onClick={() => onDeletePastBook(book.id)}
+                    disabled={loadingAction === `delete-past-${book.id}`}
+                    className="flex-1 sm:flex-none p-2 bg-watermelon-pink text-white rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center"
+                  >
+                    {loadingAction === `delete-past-${book.id}` ? <CircleNotch className="animate-spin" size={18} /> : <Trash size={18} weight="bold" />}
+                  </button>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2 md:gap-4">
+                <span className="inline-flex items-center gap-1 text-[9px] md:text-[10px] font-black text-vibrant-lilac uppercase bg-vibrant-lilac/10 px-2 py-0.5 rounded-full border border-vibrant-lilac/20">
+                  <Calendar size={12} weight="bold" /> {book.dateRead}
+                </span>
+                <span className="text-[9px] md:text-[10px] font-black text-watermelon-pink uppercase bg-watermelon-pink/10 px-2 py-0.5 rounded-full border border-watermelon-pink/20">
+                  ★ {book.rating !== undefined && !isNaN(book.rating) ? book.rating : "N/A"}
+                </span>
+              </div>
+              <p className="mt-3 text-xs text-rich-charcoal/60 line-clamp-2 md:line-clamp-3 italic font-medium leading-relaxed">
+                {book.summary}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </Reorder.Item>
   );
 }
