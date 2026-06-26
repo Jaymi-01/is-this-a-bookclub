@@ -23,7 +23,9 @@ import {
   Camera,
   PencilLine,
   Trash,
-  DotsSix
+  DotsSix,
+  CaretLeft,
+  CaretRight
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp, QuerySnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
@@ -83,13 +85,28 @@ export default function AdminPage() {
   const [deleteConfirmData, setDeleteConfirmData] = useState<{id: string, email: string} | null>(null);
 
   const [localPastBooks, setLocalPastBooks] = useState<Book[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const totalPages = Math.ceil(localPastBooks.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = localPastBooks.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     setLocalPastBooks(pastBooks);
   }, [pastBooks]);
 
-  const handleReorder = (newOrder: Book[]) => {
-    setLocalPastBooks(newOrder);
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [localPastBooks.length, totalPages, currentPage]);
+
+  const handlePageReorder = (newPagedOrder: Book[]) => {
+    const updated = [...localPastBooks];
+    updated.splice(indexOfFirstItem, newPagedOrder.length, ...newPagedOrder);
+    setLocalPastBooks(updated);
   };
 
   const handleDragEnd = async () => {
@@ -635,23 +652,62 @@ export default function AdminPage() {
                       No books in archive yet.
                     </div>
                   ) : (
-                    <Reorder.Group axis="y" values={localPastBooks} onReorder={handleReorder} className="space-y-6">
-                      {localPastBooks.map((book) => (
-                        <ReorderableBookItem
-                          key={book.id}
-                          book={book}
-                          editingBookId={editingBookId}
-                          editBookForm={editBookForm}
-                          loadingAction={loadingAction}
-                          onStartEdit={handleStartEdit}
-                          onCancelEdit={handleCancelEdit}
-                          onUpdatePastBook={handleUpdatePastBook}
-                          onDeletePastBook={handleDeletePastBook}
-                          setEditBookForm={setEditBookForm}
-                          onDragEnd={handleDragEnd}
-                        />
-                      ))}
-                    </Reorder.Group>
+                    <>
+                      <Reorder.Group axis="y" values={currentItems} onReorder={handlePageReorder} className="space-y-6">
+                        {currentItems.map((book) => (
+                          <ReorderableBookItem
+                            key={book.id}
+                            book={book}
+                            editingBookId={editingBookId}
+                            editBookForm={editBookForm}
+                            loadingAction={loadingAction}
+                            onStartEdit={handleStartEdit}
+                            onCancelEdit={handleCancelEdit}
+                            onUpdatePastBook={handleUpdatePastBook}
+                            onDeletePastBook={handleDeletePastBook}
+                            setEditBookForm={setEditBookForm}
+                            onDragEnd={handleDragEnd}
+                          />
+                        ))}
+                      </Reorder.Group>
+
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 pt-6 border-t-2 border-dashed border-rich-charcoal/10">
+                          <button
+                            type="button"
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            className="p-2.5 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center animate-transition"
+                          >
+                            <CaretLeft size={16} weight="bold" />
+                          </button>
+
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                              key={page}
+                              type="button"
+                              onClick={() => setCurrentPage(page)}
+                              className={`w-10 h-10 font-bold rounded-xl border-2 border-rich-charcoal transition-all flex items-center justify-center ${
+                                currentPage === page
+                                  ? "bg-vibrant-lilac text-white shadow-none translate-y-[2px]"
+                                  : "bg-white text-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          ))}
+
+                          <button
+                            type="button"
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            className="p-2.5 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center animate-transition"
+                          >
+                            <CaretRight size={16} weight="bold" />
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </section>
