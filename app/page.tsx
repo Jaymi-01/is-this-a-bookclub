@@ -7,7 +7,7 @@ import { CommunityVibe } from "@/components/CommunityVibe";
 import {
   Books,
   Star,
-  ChatsCircle,
+  Users,
   Gear,
   InstagramLogo,
   Phone,
@@ -182,7 +182,7 @@ export default function Home() {
             </p>
           </div>
           <div className="text-center p-10 bg-parchment rounded-[2rem] border-4 border-forest-green shadow-[8px_8px_0px_#2A734D] transform hover:-translate-y-2 transition-transform">
-            <ChatsCircle
+            <Users
               size={56}
               weight="fill"
               className="mx-auto text-forest-green mb-6"
