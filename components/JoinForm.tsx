@@ -184,9 +184,19 @@ export function JoinForm() {
               id="whatsapp"
               type="tel"
               value={formData.whatsapp}
-              onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, whatsapp: val });
+                if (errors.whatsapp) setErrors(prev => ({ ...prev, whatsapp: "" }));
+              }}
+              onBlur={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                if (val && (val.length < 7 || val.length > 15)) {
+                  setErrors(prev => ({ ...prev, whatsapp: "Please enter a valid phone number." }));
+                }
+              }}
               className={`w-full p-4 bg-white border-4 ${errors.whatsapp ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
-              placeholder="+234..."
+              placeholder="e.g. 080 1234 5678"
             />
             <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-wider">Please provide a reachable WhatsApp number.</p>
             {errors.whatsapp && <p className="text-watermelon-pink text-xs font-bold">{errors.whatsapp}</p>}
