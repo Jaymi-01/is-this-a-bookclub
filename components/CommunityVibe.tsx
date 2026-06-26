@@ -1,7 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useBookStore } from "@/lib/store";
+
+const getSeedRandom = (str: string, seed: number) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const x = Math.sin(hash + seed) * 10000;
+  return x - Math.floor(x);
+};
 
 export function CommunityVibe() {
   const { communityImage, signatures } = useBookStore();
@@ -33,29 +42,36 @@ export function CommunityVibe() {
         >
           {/* SIGNATURE WALL EFFECT */}
           <div className="absolute inset-0 z-0 pointer-events-none opacity-20 select-none">
-            {signatures.map((name, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                style={{
-                  position: 'absolute',
-                  top: `${Math.random() * 80 + 10}%`,
-                  left: `${Math.random() * 80 + 10}%`,
-                  transform: `rotate(${Math.random() * 40 - 20}deg)`,
-                  fontSize: `${Math.random() * 15 + 10}px`,
-                  filter: `blur(${Math.random() * 1.5}px)`,
-                }}
-                className="font-serif font-black text-rich-charcoal whitespace-nowrap"
-              >
-                {name}
-              </motion.span>
-            ))}
+            {signatures.map((name, i) => {
+              const top = `${getSeedRandom(name, i + 1) * 80 + 10}%`;
+              const left = `${getSeedRandom(name, i + 2) * 80 + 10}%`;
+              const rotate = `rotate(${getSeedRandom(name, i + 3) * 40 - 20}deg)`;
+              const fontSize = `${getSeedRandom(name, i + 4) * 15 + 10}px`;
+              const blur = `${getSeedRandom(name, i + 5) * 1.5}px`;
+              return (
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  style={{
+                    position: 'absolute',
+                    top,
+                    left,
+                    transform: rotate,
+                    fontSize,
+                    filter: `blur(${blur})`,
+                  }}
+                  className="font-serif font-black text-rich-charcoal whitespace-nowrap"
+                >
+                  {name}
+                </motion.span>
+              );
+            })}
           </div>
 
           {/* Main Text */}
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-serif font-black text-rich-charcoal leading-tight tracking-tighter">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-rich-charcoal leading-tight tracking-tighter">
               Join the Ultimate <br/>
               <span className="text-forest-green italic underline decoration-watermelon-pink decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">Nigerian Book Community.</span>
             </h2>
