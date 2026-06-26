@@ -11,7 +11,7 @@ export default function NotFound() {
         <h1 className="text-6xl md:text-8xl font-serif font-black text-rich-charcoal mb-4">404</h1>
         <h2 className="text-2xl font-bold text-rich-charcoal mb-6 uppercase tracking-tight">Chapter Not Found</h2>
         <p className="text-rich-charcoal/60 font-medium mb-10 leading-relaxed">
-          It seems you've wandered into a blank page. This chapter hasn't been written yet, or maybe it was lost in the library.
+          It seems you&apos;ve wandered into a blank page. This chapter hasn&apos;t been written yet, or maybe it was lost in the library.
         </p>
         <Link 
           href="/" 
