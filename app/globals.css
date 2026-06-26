@@ -109,4 +109,49 @@
   button {
     @apply cursor-pointer;
   }
+  
+  /* Custom Scrollbar Aesthetic */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FDFBF7;
+    border-left: 3px solid #1A1A1A;
+  }
+  ::-webkit-scrollbar-track:horizontal {
+    border-left: none;
+    border-top: 3px solid #1A1A1A;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1A1A1A;
+    border: 2px solid #FDFBF7;
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8C52FF;
+  }
+
+  /* Sleek Scrollbar for Modal/Containers */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    border-left: none;
+    border-top: none;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #1A1A1A;
+    border: none;
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #8C52FF;
+  }
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #1A1A1A transparent;
+  }
 }
