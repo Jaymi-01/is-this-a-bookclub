@@ -5,10 +5,10 @@ import { useBookStore } from "@/lib/store";
 import { auth, db } from "@/lib/firebase";
 import { Book } from "@/lib/data";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, User } from "firebase/auth";
-import { 
-  BookOpen, 
-  Calendar, 
-  Plus, 
+import {
+  BookOpen,
+  Calendar,
+  Plus,
   FloppyDisk,
   Archive,
   TrendUp,
@@ -54,19 +54,19 @@ export default function AdminPage() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [cooldown, setCooldown] = useState(0);
 
-  const { 
-    currentBook, setCurrentBook, 
+  const {
+    currentBook, setCurrentBook,
     pastBooks, setPastBooks,
-    addPastBook, 
-    meetingDate, setMeetingDate, 
-    badgeText, setBadgeText, 
-    booksFinished, setBooksFinished, 
+    addPastBook,
+    meetingDate, setMeetingDate,
+    badgeText, setBadgeText,
+    booksFinished, setBooksFinished,
     activeMembers, setActiveMembers,
     communityImage, setCommunityImage,
     signatures, setSignatures,
-    festiveMode, setFestiveMode,
+    activeTheme, setActiveTheme,
     festiveGreeting, setFestiveGreeting,
-    init 
+    init
   } = useBookStore();
 
   const [bookForm, setBookForm] = useState({ ...currentBook });
@@ -75,7 +75,7 @@ export default function AdminPage() {
   const [membersCount, setMembersCount] = useState(activeMembers);
   const [communityImageUrl, setCommunityImageUrl] = useState(communityImage);
   const [signatureText, setSignatureText] = useState(signatures.join(", "));
-  const [localFestiveMode, setLocalFestiveMode] = useState(festiveMode);
+  const [localActiveTheme, setLocalActiveTheme] = useState(activeTheme);
   const [localFestiveGreeting, setLocalFestiveGreeting] = useState(festiveGreeting);
   const [pastBookForm, setPastBookForm] = useState({
     title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
@@ -119,7 +119,7 @@ export default function AdminPage() {
 
   const [customMeetingDate, setCustomMeetingDate] = useState(meetingDate);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [deleteConfirmData, setDeleteConfirmData] = useState<{id: string, email: string} | null>(null);
+  const [deleteConfirmData, setDeleteConfirmData] = useState<{ id: string, email: string } | null>(null);
 
   const [localPastBooks, setLocalPastBooks] = useState<Book[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -217,8 +217,8 @@ export default function AdminPage() {
   }, [meetingDate]);
 
   useEffect(() => {
-    setLocalFestiveMode(festiveMode);
-  }, [festiveMode]);
+    setLocalActiveTheme(activeTheme);
+  }, [activeTheme]);
 
   useEffect(() => {
     setLocalFestiveGreeting(festiveGreeting);
@@ -256,7 +256,7 @@ export default function AdminPage() {
     const password = formData.get("password") as string;
 
     if (cooldown > Date.now()) {
-      toast.error(`Locked. Try again in ${Math.ceil((cooldown - Date.now())/1000)}s`);
+      toast.error(`Locked. Try again in ${Math.ceil((cooldown - Date.now()) / 1000)}s`);
       return;
     }
 
@@ -348,10 +348,10 @@ export default function AdminPage() {
     e.preventDefault();
     setLoadingAction("festive");
     try {
-      await setFestiveMode(localFestiveMode);
+      await setActiveTheme(localActiveTheme);
       await setFestiveGreeting(localFestiveGreeting);
-      toast.success("Festive settings saved!");
-      logActivity("UPDATE_FESTIVE", `Mode: ${localFestiveMode ? "ON" : "OFF"}, Greeting: ${localFestiveGreeting}`);
+      toast.success("Theme settings saved!");
+      logActivity("UPDATE_THEME", `Theme: ${localActiveTheme}, Greeting: ${localFestiveGreeting}`);
     } catch (error: unknown) {
       const e = error as Error;
       toast.error(`Error: ${e.message}`);
@@ -527,7 +527,7 @@ export default function AdminPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-warm-sand flex items-center justify-center p-6">
-        <motion.div 
+        <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="w-full max-w-md bg-parchment p-10 rounded-[2.5rem] border-4 border-rich-charcoal shadow-[12px_12px_0px_#1A1A1A]"
@@ -541,35 +541,35 @@ export default function AdminPage() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">
-            <input 
-              type="text" 
-              className="hidden" 
-              value={honeypot} 
-              onChange={e => setHoneypot(e.target.value)} 
-              tabIndex={-1} 
-              autoComplete="off" 
+            <input
+              type="text"
+              className="hidden"
+              value={honeypot}
+              onChange={e => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
             />
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">Email</label>
-              <input 
+              <input
                 name="email"
-                type="email" required 
+                type="email" required
                 autoComplete="email"
                 className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-white focus:ring-4 focus:ring-vibrant-lilac outline-none"
               />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">Password</label>
-              <input 
+              <input
                 name="password"
-                type="password" required 
+                type="password" required
                 autoComplete="current-password"
                 className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-white focus:ring-4 focus:ring-vibrant-lilac outline-none"
                 style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
               />
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoggingIn}
               className="w-full py-5 bg-vibrant-lilac text-white font-black text-xl rounded-xl border-4 border-rich-charcoal shadow-[6px_6px_0px_#1A1A1A] hover:shadow-[10px_10px_0px_#1A1A1A] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
             >
@@ -597,7 +597,7 @@ export default function AdminPage() {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-vibrant-lilac">ITABC Admin Dashboard</span>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 w-full md:w-auto">
             <Link href="/" className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all">
               <House weight="bold" size={18} /> View Site
@@ -625,8 +625,8 @@ export default function AdminPage() {
                       <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">Update the current read</p>
                     </div>
                   </div>
-                  <button 
-                    onClick={handleOpenArchiveModal} 
+                  <button
+                    onClick={handleOpenArchiveModal}
                     disabled={loadingAction === "archiving" || isArchiveModalOpen}
                     className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#F06595] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all disabled:opacity-50"
                   >
@@ -644,14 +644,14 @@ export default function AdminPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Title</label>
-                        <input value={bookForm.title} onChange={e => setBookForm({...bookForm, title: e.target.value})} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                        <input value={bookForm.title} onChange={e => setBookForm({ ...bookForm, title: e.target.value })} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Author</label>
-                        <input value={bookForm.author} onChange={e => setBookForm({...bookForm, author: e.target.value})} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                        <input value={bookForm.author} onChange={e => setBookForm({ ...bookForm, author: e.target.value })} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
                       </div>
                     </div>
-                    <input value={bookForm.cover} onChange={e => setBookForm({...bookForm, cover: e.target.value})} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs" placeholder="Cover URL" />
+                    <input value={bookForm.cover} onChange={e => setBookForm({ ...bookForm, cover: e.target.value })} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs" placeholder="Cover URL" />
                     <button type="submit" disabled={!!loadingAction} className="w-full bg-vibrant-lilac text-white font-black py-5 rounded-xl border-4 border-rich-charcoal shadow-[6px_6px_0px_#1A1A1A] uppercase text-sm disabled:opacity-50">
                       {loadingAction === "spotlight" ? <CircleNotch className="animate-spin" size={24} /> : "Update Spotlight"}
                     </button>
@@ -689,27 +689,27 @@ export default function AdminPage() {
                   }
                 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-1">
-                    <input placeholder="Title" value={pastBookForm.title} onChange={e => { setPastBookForm({...pastBookForm, title: e.target.value}); if (pastBookErrors.title) setPastBookErrors({...pastBookErrors, title: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    <input placeholder="Title" value={pastBookForm.title} onChange={e => { setPastBookForm({ ...pastBookForm, title: e.target.value }); if (pastBookErrors.title) setPastBookErrors({ ...pastBookErrors, title: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
                     {pastBookErrors.title && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.title}</span>}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <input placeholder="Author" value={pastBookForm.author} onChange={e => { setPastBookForm({...pastBookForm, author: e.target.value}); if (pastBookErrors.author) setPastBookErrors({...pastBookErrors, author: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    <input placeholder="Author" value={pastBookForm.author} onChange={e => { setPastBookForm({ ...pastBookForm, author: e.target.value }); if (pastBookErrors.author) setPastBookErrors({ ...pastBookErrors, author: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
                     {pastBookErrors.author && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.author}</span>}
                   </div>
                   <div className="md:col-span-2 flex flex-col gap-1">
-                    <input placeholder="Cover URL" value={pastBookForm.cover} onChange={e => { setPastBookForm({...pastBookForm, cover: e.target.value}); if (pastBookErrors.cover) setPastBookErrors({...pastBookErrors, cover: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment" />
+                    <input placeholder="Cover URL" value={pastBookForm.cover} onChange={e => { setPastBookForm({ ...pastBookForm, cover: e.target.value }); if (pastBookErrors.cover) setPastBookErrors({ ...pastBookErrors, cover: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment" />
                     {pastBookErrors.cover && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.cover}</span>}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <input placeholder="Month" value={pastBookForm.dateRead} onChange={e => { setPastBookForm({...pastBookForm, dateRead: e.target.value}); if (pastBookErrors.dateRead) setPastBookErrors({...pastBookErrors, dateRead: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    <input placeholder="Month" value={pastBookForm.dateRead} onChange={e => { setPastBookForm({ ...pastBookForm, dateRead: e.target.value }); if (pastBookErrors.dateRead) setPastBookErrors({ ...pastBookErrors, dateRead: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
                     {pastBookErrors.dateRead && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.dateRead}</span>}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <input type="number" step="0.1" value={pastBookForm.rating} onChange={e => { setPastBookForm({...pastBookForm, rating: parseFloat(e.target.value)}); if (pastBookErrors.rating) setPastBookErrors({...pastBookErrors, rating: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    <input type="number" step="0.1" value={pastBookForm.rating} onChange={e => { setPastBookForm({ ...pastBookForm, rating: parseFloat(e.target.value) }); if (pastBookErrors.rating) setPastBookErrors({ ...pastBookErrors, rating: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
                     {pastBookErrors.rating && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.rating}</span>}
                   </div>
                   <div className="md:col-span-2 flex flex-col gap-1">
-                    <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => { setPastBookForm({...pastBookForm, summary: e.target.value}); if (pastBookErrors.summary) setPastBookErrors({...pastBookErrors, summary: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32 resize-none" />
+                    <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => { setPastBookForm({ ...pastBookForm, summary: e.target.value }); if (pastBookErrors.summary) setPastBookErrors({ ...pastBookErrors, summary: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32 resize-none" />
                     {pastBookErrors.summary && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.summary}</span>}
                   </div>
                   <button type="submit" disabled={!!loadingAction} className="md:col-span-2 bg-forest-green text-white font-black p-4 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] uppercase disabled:opacity-50">
@@ -771,11 +771,10 @@ export default function AdminPage() {
                               key={page}
                               type="button"
                               onClick={() => setCurrentPage(page)}
-                              className={`w-10 h-10 font-bold rounded-xl border-2 border-rich-charcoal transition-all flex items-center justify-center ${
-                                currentPage === page
+                              className={`w-10 h-10 font-bold rounded-xl border-2 border-rich-charcoal transition-all flex items-center justify-center ${currentPage === page
                                   ? "bg-vibrant-lilac text-white shadow-none translate-y-[2px]"
                                   : "bg-white text-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none"
-                              }`}
+                                }`}
                             >
                               {page}
                             </button>
@@ -810,14 +809,14 @@ export default function AdminPage() {
                   <div className="aspect-video w-full bg-parchment rounded-xl border-4 border-rich-charcoal overflow-hidden mb-4 shadow-[4px_4px_0px_#1A1A1A]">
                     <img src={communityImageUrl} alt="Preview" className="w-full h-full object-cover" />
                   </div>
-                  <input 
-                    value={communityImageUrl} 
-                    onChange={e => setCommunityImageUrl(e.target.value)} 
-                    className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs" 
-                    placeholder="Paste Image URL here..." 
+                  <input
+                    value={communityImageUrl}
+                    onChange={e => setCommunityImageUrl(e.target.value)}
+                    className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs"
+                    placeholder="Paste Image URL here..."
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={!!loadingAction}
                     className="w-full bg-vibrant-lilac text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2 disabled:opacity-50"
                   >
@@ -838,14 +837,14 @@ export default function AdminPage() {
                   <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-widest leading-relaxed">
                     Enter names separated by commas. These will appear blurred in the background of the &quot;Family&quot; section.
                   </p>
-                  <textarea 
-                    value={signatureText} 
-                    onChange={e => setSignatureText(e.target.value)} 
-                    className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm h-32 focus:ring-4 focus:ring-watermelon-pink outline-none resize-none" 
-                    placeholder="Tunde, Amaka, Chidi, Joel..." 
+                  <textarea
+                    value={signatureText}
+                    onChange={e => setSignatureText(e.target.value)}
+                    className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm h-32 focus:ring-4 focus:ring-watermelon-pink outline-none resize-none"
+                    placeholder="Tunde, Amaka, Chidi, Joel..."
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={!!loadingAction}
                     className="w-full bg-rich-charcoal text-parchment font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#F06595] text-xs uppercase flex items-center justify-center gap-2 disabled:opacity-50"
                   >
@@ -879,43 +878,55 @@ export default function AdminPage() {
                 </form>
               </section>
 
-              {/* Festive Season Control */}
+              {/* Theme Settings Control */}
               <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-watermelon-pink text-white rounded-xl">
                     <Sparkle size={20} weight="fill" />
                   </div>
-                  <h2 className="text-xl font-serif font-bold">Festive Season Settings</h2>
+                  <h2 className="text-xl font-serif font-bold">Seasonal Themes</h2>
                 </div>
                 <form onSubmit={handleUpdateFestive} className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-parchment border-4 border-rich-charcoal rounded-xl shadow-[4px_4px_0px_#1A1A1A]">
-                    <div className="space-y-1">
-                      <span className="font-bold text-sm block">Toggle Festive Mode</span>
-                      <span className="text-[10px] text-rich-charcoal/40 font-bold uppercase tracking-wider">Snow flakes, Santa hat, holiday colors</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setLocalFestiveMode(prev => !prev)}
-                      className={`px-4 py-2 font-black rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] transition-all text-xs uppercase ${
-                        localFestiveMode 
-                          ? "bg-forest-green text-white" 
-                          : "bg-parchment text-rich-charcoal"
-                      }`}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Select Active Theme</label>
+                    <select
+                      value={localActiveTheme}
+                      onChange={(e) => {
+                        const nextTheme = e.target.value;
+                        setLocalActiveTheme(nextTheme);
+                        // Auto-fill default holiday greetings
+                        if (nextTheme === "christmas") {
+                          setLocalFestiveGreeting("Merry Christmas & Happy New Year from ITABC! 🎄✨");
+                        } else if (nextTheme === "eid") {
+                          setLocalFestiveGreeting("Eid Mubarak to all our Muslim Bookworms! 🌙✨");
+                        } else if (nextTheme === "valentine") {
+                          setLocalFestiveGreeting("Happy Valentine's Day! Curl up with a good love story today 💖📚");
+                        } else if (nextTheme === "newyear") {
+                          setLocalFestiveGreeting("Happy New Year! Wishing you 365 days of new pages 🎆🥂");
+                        } else {
+                          setLocalFestiveGreeting("");
+                        }
+                      }}
+                      className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm focus:ring-4 focus:ring-watermelon-pink outline-none"
                     >
-                      {localFestiveMode ? "Active" : "Disabled"}
-                    </button>
+                      <option value="default">Default Style</option>
+                      <option value="christmas">Christmas Theme 🎄</option>
+                      <option value="eid">Eid Theme 🌙</option>
+                      <option value="valentine">Valentine`&lsquo;`s Day Theme 💖</option>
+                      <option value="newyear">New Year Celebration Theme 🎆</option>
+                    </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Festive Greeting Banner Text</label>
-                    <input 
-                      value={localFestiveGreeting} 
-                      onChange={e => setLocalFestiveGreeting(e.target.value)} 
-                      className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm" 
-                      placeholder="Merry Christmas & Happy New Year!..." 
+                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Greeting Banner Text (Optional)</label>
+                    <input
+                      value={localFestiveGreeting}
+                      onChange={e => setLocalFestiveGreeting(e.target.value)}
+                      className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm focus:ring-4 focus:ring-watermelon-pink outline-none"
+                      placeholder="Custom greeting banner message..."
                     />
                   </div>
                   <button type="submit" disabled={!!loadingAction} className="w-full bg-watermelon-pink text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50 flex items-center justify-center gap-2">
-                    {loadingAction === "festive" ? <CircleNotch className="animate-spin" size={20} /> : "Save Festive Settings"}
+                    {loadingAction === "festive" ? <CircleNotch className="animate-spin" size={20} /> : "Save Theme Settings"}
                   </button>
                 </form>
               </section>
@@ -944,7 +955,7 @@ export default function AdminPage() {
                 <div className="space-y-4">
                   {submissions.map((sub) => (
                     <div key={sub.id} className="bg-white p-4 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] relative">
-                      <button 
+                      <button
                         disabled={loadingAction === `delete-${sub.id}`}
                         onClick={() => setDeleteConfirmData({ id: sub.id, email: sub.email })}
                         className="absolute top-2 right-2 text-rich-charcoal/20 hover:text-watermelon-pink transition-colors"
@@ -953,15 +964,15 @@ export default function AdminPage() {
                       </button>
                       <h4 className="font-black text-xs uppercase">{sub.name}</h4>
                       <div className="flex flex-col gap-1 mt-1">
-                        <a 
+                        <a
                           href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
-                          target="_blank" 
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[10px] font-black text-green-600 uppercase hover:underline"
                         >
                           <WhatsappLogo weight="fill" /> Invite to WhatsApp
                         </a>
-                        <a 
+                        <a
                           href={`mailto:${sub.email}?subject=${encodeURIComponent("Welcome to Is This A Bookclub?")}&body=${encodeURIComponent(`Hi ${sub.name},\n\nYou received this message because you signified interest in joining Is This A Bookclub.\n\nHere is the link to join the official WhatsApp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t\n\nWelcome, and we do hope you enjoy your stay.\n\n- ITABC TEAM`)}`}
                           className="inline-flex items-center gap-1 text-[10px] font-black text-watermelon-pink uppercase hover:underline"
                         >
@@ -986,7 +997,7 @@ export default function AdminPage() {
       <AnimatePresence>
         {isArchiveModalOpen && archiveForm && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-rich-charcoal/40 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -1003,51 +1014,51 @@ export default function AdminPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Title</label>
-                    <input 
-                      value={archiveForm.title} 
-                      onChange={e => setArchiveForm({...archiveForm, title: e.target.value})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    <input
+                      value={archiveForm.title}
+                      onChange={e => setArchiveForm({ ...archiveForm, title: e.target.value })}
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Author</label>
-                    <input 
-                      value={archiveForm.author} 
-                      onChange={e => setArchiveForm({...archiveForm, author: e.target.value})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    <input
+                      value={archiveForm.author}
+                      onChange={e => setArchiveForm({ ...archiveForm, author: e.target.value })}
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Cover URL</label>
-                    <input 
-                      value={archiveForm.cover} 
-                      onChange={e => setArchiveForm({...archiveForm, cover: e.target.value})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs" 
+                    <input
+                      value={archiveForm.cover}
+                      onChange={e => setArchiveForm({ ...archiveForm, cover: e.target.value })}
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Month (Date Read)</label>
-                    <input 
-                      value={archiveForm.dateRead} 
-                      onChange={e => setArchiveForm({...archiveForm, dateRead: e.target.value})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                    <input
+                      value={archiveForm.dateRead}
+                      onChange={e => setArchiveForm({ ...archiveForm, dateRead: e.target.value })}
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Rating</label>
-                    <input 
+                    <input
                       type="number" step="0.1"
-                      value={archiveForm.rating} 
-                      onChange={e => setArchiveForm({...archiveForm, rating: parseFloat(e.target.value)})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+                      value={archiveForm.rating}
+                      onChange={e => setArchiveForm({ ...archiveForm, rating: parseFloat(e.target.value) })}
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Summary</label>
-                    <textarea 
-                      value={archiveForm.summary} 
-                      onChange={e => setArchiveForm({...archiveForm, summary: e.target.value})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none" 
+                    <textarea
+                      value={archiveForm.summary}
+                      onChange={e => setArchiveForm({ ...archiveForm, summary: e.target.value })}
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none"
                     />
                   </div>
                 </div>
@@ -1056,14 +1067,14 @@ export default function AdminPage() {
               {/* Fixed Footer */}
               <div className="p-6 md:p-8 pt-4 border-t-2 border-dashed border-rich-charcoal/10 shrink-0">
                 <div className="grid grid-cols-2 gap-4">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => { setIsArchiveModalOpen(false); setArchiveForm(null); }}
                     className="py-3 bg-white text-rich-charcoal font-black rounded-xl border-2 border-rich-charcoal hover:bg-parchment transition-all"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     type="button"
                     onClick={handleConfirmArchive}
                     disabled={loadingAction === "archiving"}
@@ -1079,7 +1090,7 @@ export default function AdminPage() {
 
         {deleteConfirmData && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-rich-charcoal/40 backdrop-blur-sm">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -1093,13 +1104,13 @@ export default function AdminPage() {
                 Are you sure you want to remove <span className="font-bold text-rich-charcoal">{deleteConfirmData.email}</span> from the join requests?
               </p>
               <div className="grid grid-cols-2 gap-4">
-                <button 
+                <button
                   onClick={() => setDeleteConfirmData(null)}
                   className="py-3 bg-white text-rich-charcoal font-black rounded-xl border-2 border-rich-charcoal hover:bg-parchment transition-all"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={() => handleDeleteRequest(deleteConfirmData.id, deleteConfirmData.email)}
                   disabled={!!loadingAction}
                   className="py-3 bg-watermelon-pink text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] hover:shadow-none hover:translate-y-[4px] transition-all disabled:opacity-50"
@@ -1155,53 +1166,53 @@ function ReorderableBookItem({
       {isEditing && editBookForm ? (
         <form onSubmit={onUpdatePastBook} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input 
-              placeholder="Title" 
-              value={editBookForm.title} 
-              onChange={e => setEditBookForm({...editBookForm, title: e.target.value})} 
-              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            <input
+              placeholder="Title"
+              value={editBookForm.title}
+              onChange={e => setEditBookForm({ ...editBookForm, title: e.target.value })}
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
-            <input 
-              placeholder="Author" 
-              value={editBookForm.author} 
-              onChange={e => setEditBookForm({...editBookForm, author: e.target.value})} 
-              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            <input
+              placeholder="Author"
+              value={editBookForm.author}
+              onChange={e => setEditBookForm({ ...editBookForm, author: e.target.value })}
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
-            <input 
-              placeholder="Cover URL" 
-              value={editBookForm.cover} 
-              onChange={e => setEditBookForm({...editBookForm, cover: e.target.value})} 
-              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs" 
+            <input
+              placeholder="Cover URL"
+              value={editBookForm.cover}
+              onChange={e => setEditBookForm({ ...editBookForm, cover: e.target.value })}
+              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs"
             />
-            <input 
-              placeholder="Month" 
-              value={editBookForm.dateRead} 
-              onChange={e => setEditBookForm({...editBookForm, dateRead: e.target.value})} 
-              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            <input
+              placeholder="Month"
+              value={editBookForm.dateRead}
+              onChange={e => setEditBookForm({ ...editBookForm, dateRead: e.target.value })}
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
-            <input 
-              type="number" step="0.1" 
-              value={editBookForm.rating} 
-              onChange={e => setEditBookForm({...editBookForm, rating: parseFloat(e.target.value)})} 
-              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm" 
+            <input
+              type="number" step="0.1"
+              value={editBookForm.rating}
+              onChange={e => setEditBookForm({ ...editBookForm, rating: parseFloat(e.target.value) })}
+              className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
-            <textarea 
-              placeholder="Summary" 
-              value={editBookForm.summary} 
-              onChange={e => setEditBookForm({...editBookForm, summary: e.target.value})} 
-              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none" 
+            <textarea
+              placeholder="Summary"
+              value={editBookForm.summary}
+              onChange={e => setEditBookForm({ ...editBookForm, summary: e.target.value })}
+              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none"
             />
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loadingAction === `update-past-${book.id}`}
               className="flex-1 bg-forest-green text-white font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2"
             >
               {loadingAction === `update-past-${book.id}` ? <CircleNotch className="animate-spin" /> : <FloppyDisk weight="bold" />} Save Changes
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={onCancelEdit}
               className="flex-1 bg-white text-rich-charcoal font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase"
             >
@@ -1212,7 +1223,7 @@ function ReorderableBookItem({
       ) : (
         <div className="flex gap-4 items-center">
           {/* Drag Handle */}
-          <div 
+          <div
             onPointerDown={(e) => controls.start(e)}
             className="cursor-grab active:cursor-grabbing p-2 hover:bg-rich-charcoal/5 rounded-lg border-2 border-transparent hover:border-rich-charcoal/10 transition-all text-rich-charcoal/40 hover:text-rich-charcoal shrink-0"
             style={{ touchAction: "none" }}
@@ -1232,13 +1243,13 @@ function ReorderableBookItem({
                   <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">{book.author}</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
-                  <button 
+                  <button
                     onClick={() => onStartEdit(book)}
                     className="flex-1 sm:flex-none p-2 bg-white text-rich-charcoal rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all flex items-center justify-center"
                   >
                     <PencilLine size={18} weight="bold" />
                   </button>
-                  <button 
+                  <button
                     onClick={() => onDeletePastBook(book.id)}
                     disabled={loadingAction === `delete-past-${book.id}`}
                     className="flex-1 sm:flex-none p-2 bg-watermelon-pink text-white rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center"
