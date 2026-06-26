@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useBookStore } from "@/lib/store";
 import { Countdown } from "./Countdown";
 import { BookBookmark } from "@phosphor-icons/react";
@@ -26,7 +26,7 @@ export function Hero() {
             <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">The Monthly Spotlight</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif font-black text-rich-charcoal leading-[1.1] tracking-tighter">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black text-rich-charcoal leading-[1.1] tracking-tighter">
             Premium Nigerian <br className="hidden lg:block" />
             <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic"> Literature Club</span>.
           </h1>
@@ -59,9 +59,9 @@ export function Hero() {
           <motion.div
             animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
             transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute -top-4 -right-4 md:-top-10 md:-right-10 w-24 h-24 md:w-32 md:h-32 bg-watermelon-pink rounded-full border-4 border-rich-charcoal flex items-center justify-center text-center p-2 md:p-4 shadow-xl z-20"
+            className="absolute -top-2 -right-2 md:-top-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-watermelon-pink rounded-full border-4 border-rich-charcoal flex items-center justify-center text-center p-1 md:p-2 shadow-xl z-20"
           >
-            <span className="font-serif font-black text-rich-charcoal text-[10px] md:text-sm leading-tight uppercase">
+            <span className="font-serif font-black text-rich-charcoal text-[8px] md:text-[11px] leading-tight uppercase">
               {badgeText.split(' ').map((word, i) => (
                 <span key={i}>{word}<br /></span>
               ))}
@@ -77,7 +77,7 @@ export function Hero() {
         viewport={{ once: true }}
         className="w-full max-w-4xl bg-parchment p-8 md:p-16 rounded-[2.5rem] border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A] text-center z-10"
       >
-        <h2 className="text-3xl md:text-5xl font-serif font-black text-rich-charcoal mb-2 uppercase tracking-tighter">Next Meeting</h2>
+        <h2 className="text-3xl md:text-4xl font-serif font-black text-rich-charcoal mb-2 uppercase tracking-tighter">Next Meeting</h2>
         <p className="text-xs md:text-lg font-black text-rich-charcoal/30 uppercase tracking-[0.3em] mb-10">Countdown to the Discussion</p>
         <Countdown />
       </motion.div>
