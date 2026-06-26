@@ -25,7 +25,8 @@ import {
   Trash,
   DotsSix,
   CaretLeft,
-  CaretRight
+  CaretRight,
+  Sparkle
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp, QuerySnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
@@ -63,6 +64,8 @@ export default function AdminPage() {
     activeMembers, setActiveMembers,
     communityImage, setCommunityImage,
     signatures, setSignatures,
+    festiveMode, setFestiveMode,
+    festiveGreeting, setFestiveGreeting,
     init 
   } = useBookStore();
 
@@ -72,6 +75,8 @@ export default function AdminPage() {
   const [membersCount, setMembersCount] = useState(activeMembers);
   const [communityImageUrl, setCommunityImageUrl] = useState(communityImage);
   const [signatureText, setSignatureText] = useState(signatures.join(", "));
+  const [localFestiveMode, setLocalFestiveMode] = useState(festiveMode);
+  const [localFestiveGreeting, setLocalFestiveGreeting] = useState(festiveGreeting);
   const [pastBookForm, setPastBookForm] = useState({
     title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
   });
@@ -212,6 +217,14 @@ export default function AdminPage() {
   }, [meetingDate]);
 
   useEffect(() => {
+    setLocalFestiveMode(festiveMode);
+  }, [festiveMode]);
+
+  useEffect(() => {
+    setLocalFestiveGreeting(festiveGreeting);
+  }, [festiveGreeting]);
+
+  useEffect(() => {
     if (!user) return;
     const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
@@ -323,6 +336,22 @@ export default function AdminPage() {
       await setMeetingDate(customMeetingDate);
       toast.success("Timer updated!");
       logActivity("UPDATE_TIMER", `Set next meeting to: ${customMeetingDate}`);
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(`Error: ${e.message}`);
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
+  const handleUpdateFestive = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoadingAction("festive");
+    try {
+      await setFestiveMode(localFestiveMode);
+      await setFestiveGreeting(localFestiveGreeting);
+      toast.success("Festive settings saved!");
+      logActivity("UPDATE_FESTIVE", `Mode: ${localFestiveMode ? "ON" : "OFF"}, Greeting: ${localFestiveGreeting}`);
     } catch (error: unknown) {
       const e = error as Error;
       toast.error(`Error: ${e.message}`);
@@ -846,6 +875,47 @@ export default function AdminPage() {
                   </div>
                   <button type="submit" disabled={!!loadingAction} className="w-full bg-forest-green text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50">
                     {loadingAction === "stats" ? <CircleNotch className="animate-spin" size={20} /> : "Update Stats"}
+                  </button>
+                </form>
+              </section>
+
+              {/* Festive Season Control */}
+              <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-watermelon-pink text-white rounded-xl">
+                    <Sparkle size={20} weight="fill" />
+                  </div>
+                  <h2 className="text-xl font-serif font-bold">Festive Season Settings</h2>
+                </div>
+                <form onSubmit={handleUpdateFestive} className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-parchment border-4 border-rich-charcoal rounded-xl shadow-[4px_4px_0px_#1A1A1A]">
+                    <div className="space-y-1">
+                      <span className="font-bold text-sm block">Toggle Festive Mode</span>
+                      <span className="text-[10px] text-rich-charcoal/40 font-bold uppercase tracking-wider">Snow flakes, Santa hat, holiday colors</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setLocalFestiveMode(prev => !prev)}
+                      className={`px-4 py-2 font-black rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] transition-all text-xs uppercase ${
+                        localFestiveMode 
+                          ? "bg-forest-green text-white" 
+                          : "bg-parchment text-rich-charcoal"
+                      }`}
+                    >
+                      {localFestiveMode ? "Active" : "Disabled"}
+                    </button>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Festive Greeting Banner Text</label>
+                    <input 
+                      value={localFestiveGreeting} 
+                      onChange={e => setLocalFestiveGreeting(e.target.value)} 
+                      className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm" 
+                      placeholder="Merry Christmas & Happy New Year!..." 
+                    />
+                  </div>
+                  <button type="submit" disabled={!!loadingAction} className="w-full bg-watermelon-pink text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50 flex items-center justify-center gap-2">
+                    {loadingAction === "festive" ? <CircleNotch className="animate-spin" size={20} /> : "Save Festive Settings"}
                   </button>
                 </form>
               </section>
