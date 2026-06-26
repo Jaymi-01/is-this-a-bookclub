@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Libre_Baskerville, Montserrat } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 import { BookStoreProvider } from "@/components/BookStoreProvider";
 import Script from "next/script";
 
@@ -84,7 +84,7 @@ export default function RootLayout({
         <BookStoreProvider>
           {children}
         </BookStoreProvider>
-        <Toaster position="bottom-right" />
+        <Toaster position="bottom-right" richColors />
         
         {/* Organization Schema for Google */}
         <script
