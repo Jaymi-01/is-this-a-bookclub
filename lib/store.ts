@@ -22,7 +22,7 @@ interface BookStore {
   communityImage: string;
   signatures: string[];
   loading: boolean;
-  festiveMode: boolean;
+  activeTheme: string;
   festiveGreeting: string;
   
   // Actions
@@ -36,7 +36,7 @@ interface BookStore {
   setActiveMembers: (count: number) => Promise<void>;
   setCommunityImage: (url: string) => Promise<void>;
   setSignatures: (names: string[]) => Promise<void>;
-  setFestiveMode: (enabled: boolean) => Promise<void>;
+  setActiveTheme: (theme: string) => Promise<void>;
   setFestiveGreeting: (text: string) => Promise<void>;
 }
 
@@ -56,7 +56,7 @@ export const useBookStore = create<BookStore>((set) => ({
   activeMembers: 0,
   communityImage: "https://placehold.co/1200x800?text=ITABC+Community+Photo",
   signatures: [],
-  festiveMode: false,
+  activeTheme: "default",
   festiveGreeting: "Merry Christmas & Happy New Year from ITABC! 🎄✨",
   loading: true,
 
@@ -73,7 +73,7 @@ export const useBookStore = create<BookStore>((set) => ({
           activeMembers: data.activeMembers ?? 0,
           communityImage: data.communityImage || "https://placehold.co/1200x800?text=ITABC+Community+Photo",
           signatures: data.signatures || [],
-          festiveMode: data.festiveMode ?? false,
+          activeTheme: data.activeTheme || (data.festiveMode ? "christmas" : "default"),
           festiveGreeting: data.festiveGreeting || "Merry Christmas & Happy New Year from ITABC! 🎄✨",
           loading: false,
         });
@@ -126,8 +126,8 @@ export const useBookStore = create<BookStore>((set) => ({
     await setDoc(doc(db, "siteContent", "main"), { signatures: names }, { merge: true });
   },
 
-  setFestiveMode: async (enabled) => {
-    await setDoc(doc(db, "siteContent", "main"), { festiveMode: enabled }, { merge: true });
+  setActiveTheme: async (theme) => {
+    await setDoc(doc(db, "siteContent", "main"), { activeTheme: theme }, { merge: true });
   },
 
   setFestiveGreeting: async (text) => {
