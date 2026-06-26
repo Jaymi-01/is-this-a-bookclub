@@ -8,21 +8,39 @@ import { Books, Star, ChatsCircle, Gear, InstagramLogo, Phone } from "@phosphor-
 import Link from "next/link";
 import { useBookStore } from "@/lib/store";
 import { useEffect } from "react";
+import { SnowEffect } from "@/components/SnowEffect";
 
 export default function Home() {
-  const { booksFinished, activeMembers, init } = useBookStore();
+  const { booksFinished, activeMembers, festiveMode, festiveGreeting, init } = useBookStore();
 
   useEffect(() => {
     init();
   }, [init]);
 
   return (
-    <main className="min-h-screen overflow-x-hidden">
+    <main className={`min-h-screen overflow-x-hidden ${festiveMode ? "theme-festive" : ""}`}>
+      {festiveMode && <SnowEffect />}
+
+      {festiveMode && festiveGreeting && (
+        <div className="fixed top-0 left-0 right-0 bg-watermelon-pink text-parchment text-center py-2 px-4 font-black text-[10px] md:text-xs uppercase tracking-[0.2em] border-b-4 border-rich-charcoal z-[99] flex items-center justify-center gap-2">
+          <span>🎄</span>
+          <span>{festiveGreeting}</span>
+          <span>🎁</span>
+        </div>
+      )}
+
       {/* Navigation - Minimal and Styled */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 py-4 md:py-6 pointer-events-none">
+      <nav className={`fixed ${festiveMode ? 'top-10' : 'top-0'} left-0 right-0 z-50 px-6 md:px-12 py-4 md:py-6 pointer-events-none transition-all`}>
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="bg-rich-charcoal p-2 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] pointer-events-auto flex items-center gap-2 md:gap-3">
+          <div className="relative bg-rich-charcoal p-2 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] pointer-events-auto flex items-center gap-2 md:gap-3">
             <img src="/logo.png" alt="Bookclub Logo" className="h-8 md:h-10 w-8 md:w-10 rounded-full object-cover" />
+            {festiveMode && (
+              <img
+                src="/hat.png"
+                alt="Santa Hat"
+                className="absolute -top-[14px] -left-[12px] w-[36px] h-[36px] md:-top-[18px] md:-left-[14px] md:w-[44px] md:h-[44px] transform -rotate-[35deg] drop-shadow-[0_3px_6px_rgba(0,0,0,0.45)] pointer-events-none"
+              />
+            )}
             <span className="font-serif font-black text-base md:text-lg text-parchment tracking-tighter pr-1 md:pr-2">ITABC.</span>
           </div>
           <div className="flex gap-4 pointer-events-auto">
