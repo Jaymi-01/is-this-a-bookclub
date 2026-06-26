@@ -9,13 +9,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-montserrat);
   --font-serif: var(--font-libre-baskerville);
-  
-  --color-warm-sand: #EBD48F;
-  --color-rich-charcoal: #1A1A1A;
-  --color-forest-green: #2A734D;
-  --color-vibrant-lilac: #8C52FF;
-  --color-watermelon-pink: #F06595;
-  --color-parchment: #FDFBF7;
+
+  --color-warm-sand: #ebd48f;
+  --color-rich-charcoal: #1a1a1a;
+  --color-forest-green: #2a734d;
+  --color-vibrant-lilac: #8c52ff;
+  --color-watermelon-pink: #f06595;
+  --color-parchment: #fdfbf7;
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -45,24 +45,24 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #EBD48F; /* Warm Sand */
-  --foreground: #1A1A1A; /* Rich Charcoal */
-  --card: #FDFBF7; /* Parchment/Cream */
-  --card-foreground: #1A1A1A;
-  --popover: #FDFBF7;
-  --popover-foreground: #1A1A1A;
-  --primary: #2A734D; /* Forest Green */
-  --primary-foreground: #FDFBF7;
-  --secondary: #8C52FF; /* Vibrant Lilac */
-  --secondary-foreground: #FDFBF7;
+  --background: #ebd48f; /* Warm Sand */
+  --foreground: #1a1a1a; /* Rich Charcoal */
+  --card: #fdfbf7; /* Parchment/Cream */
+  --card-foreground: #1a1a1a;
+  --popover: #fdfbf7;
+  --popover-foreground: #1a1a1a;
+  --primary: #2a734d; /* Forest Green */
+  --primary-foreground: #fdfbf7;
+  --secondary: #8c52ff; /* Vibrant Lilac */
+  --secondary-foreground: #fdfbf7;
   --muted: #f3f3f3;
   --muted-foreground: #666;
-  --accent: #8C52FF;
-  --accent-foreground: #FDFBF7;
-  --destructive: #F06595; /* Watermelon Pink used for destructive too */
-  --border: #1A1A1A;
-  --input: #1A1A1A;
-  --ring: #2A734D;
+  --accent: #8c52ff;
+  --accent-foreground: #fdfbf7;
+  --destructive: #f06595; /* Watermelon Pink used for destructive too */
+  --border: #1a1a1a;
+  --input: #1a1a1a;
+  --ring: #2a734d;
 }
 
 .dark {
@@ -109,27 +109,27 @@
   button {
     @apply cursor-pointer;
   }
-  
+
   /* Custom Scrollbar Aesthetic */
   ::-webkit-scrollbar {
     width: 12px;
     height: 12px;
   }
   ::-webkit-scrollbar-track {
-    background: #FDFBF7;
-    border-left: 3px solid #1A1A1A;
+    background: #fdfbf7;
+    border-left: 3px solid #1a1a1a;
   }
   ::-webkit-scrollbar-track:horizontal {
     border-left: none;
-    border-top: 3px solid #1A1A1A;
+    border-top: 3px solid #1a1a1a;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1A1A1A;
-    border: 2px solid #FDFBF7;
+    background: #1a1a1a;
+    border: 2px solid #fdfbf7;
     border-radius: 6px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #8C52FF;
+    background: #8c52ff;
   }
 
   /* Sleek Scrollbar for Modal/Containers */
@@ -143,183 +143,183 @@
     border-top: none;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #1A1A1A;
+    background: #1a1a1a;
     border: none;
     border-radius: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #8C52FF;
+    background: #8c52ff;
   }
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #1A1A1A transparent;
+    scrollbar-color: #1a1a1a transparent;
   }
 }
 
 /* Christmas Theme Overrides */
 .theme-christmas {
-  --color-warm-sand: #E8F1ED !important;
-  --color-vibrant-lilac: #D42F2F !important; /* Christmas Crimson Red */
-  --color-watermelon-pink: #1E5128 !important; /* Christmas Pine Green */
-  --color-forest-green: #1E5128 !important;
-  
-  --background: #E8F1ED !important;
-  --primary: #1E5128 !important;
-  --secondary: #D42F2F !important;
-  --accent: #D42F2F !important;
-  --destructive: #D42F2F !important;
-  --ring: #1E5128 !important;
+  --color-warm-sand: #e8f1ed !important;
+  --color-vibrant-lilac: #d42f2f !important; /* Christmas Crimson Red */
+  --color-watermelon-pink: #1e5128 !important; /* Christmas Pine Green */
+  --color-forest-green: #1e5128 !important;
+
+  --background: #e8f1ed !important;
+  --primary: #1e5128 !important;
+  --secondary: #d42f2f !important;
+  --accent: #d42f2f !important;
+  --destructive: #d42f2f !important;
+  --ring: #1e5128 !important;
 }
 .theme-christmas .bg-warm-sand {
-  background-color: #E8F1ED !important;
+  background-color: #e8f1ed !important;
 }
 .theme-christmas .text-forest-green {
-  color: #1E5128 !important;
+  color: #1e5128 !important;
 }
 .theme-christmas .text-vibrant-lilac {
-  color: #D42F2F !important;
+  color: #d42f2f !important;
 }
 .theme-christmas .text-watermelon-pink {
-  color: #1E5128 !important;
+  color: #1e5128 !important;
 }
 .theme-christmas .border-vibrant-lilac {
-  border-color: #D42F2F !important;
+  border-color: #d42f2f !important;
 }
 .theme-christmas .border-watermelon-pink {
-  border-color: #1E5128 !important;
+  border-color: #1e5128 !important;
 }
 .theme-christmas .border-forest-green {
-  border-color: #1E5128 !important;
+  border-color: #1e5128 !important;
 }
 .theme-christmas ::-webkit-scrollbar-thumb:hover {
-  background: #D42F2F !important;
+  background: #d42f2f !important;
 }
 .theme-christmas .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #D42F2F !important;
+  background: #d42f2f !important;
 }
 
 /* Eid Theme Overrides */
 .theme-eid {
-  --color-warm-sand: #F7EFE5 !important; /* Cozy Cream Sand */
-  --color-vibrant-lilac: #D4AF37 !important; /* Gold */
-  --color-watermelon-pink: #0F5132 !important; /* Emerald Green */
-  --color-forest-green: #0F5132 !important;
-  
-  --background: #F7EFE5 !important;
-  --primary: #0F5132 !important;
-  --secondary: #D4AF37 !important;
-  --accent: #D4AF37 !important;
-  --destructive: #D4AF37 !important;
-  --ring: #0F5132 !important;
+  --color-warm-sand: #f7efe5 !important; /* Cozy Cream Sand */
+  --color-vibrant-lilac: #d4af37 !important; /* Gold */
+  --color-watermelon-pink: #0f5132 !important; /* Emerald Green */
+  --color-forest-green: #0f5132 !important;
+
+  --background: #f7efe5 !important;
+  --primary: #0f5132 !important;
+  --secondary: #d4af37 !important;
+  --accent: #d4af37 !important;
+  --destructive: #d4af37 !important;
+  --ring: #0f5132 !important;
 }
 .theme-eid .bg-warm-sand {
-  background-color: #F7EFE5 !important;
+  background-color: #f7efe5 !important;
 }
 .theme-eid .text-forest-green {
-  color: #0F5132 !important;
+  color: #0f5132 !important;
 }
 .theme-eid .text-vibrant-lilac {
-  color: #D4AF37 !important;
+  color: #d4af37 !important;
 }
 .theme-eid .text-watermelon-pink {
-  color: #0F5132 !important;
+  color: #0f5132 !important;
 }
 .theme-eid .border-vibrant-lilac {
-  border-color: #D4AF37 !important;
+  border-color: #d4af37 !important;
 }
 .theme-eid .border-watermelon-pink {
-  border-color: #0F5132 !important;
+  border-color: #0f5132 !important;
 }
 .theme-eid .border-forest-green {
-  border-color: #0F5132 !important;
+  border-color: #0f5132 !important;
 }
 .theme-eid ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37 !important;
+  background: #d4af37 !important;
 }
 .theme-eid .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37 !important;
+  background: #d4af37 !important;
 }
 
 /* Valentine Theme Overrides */
 .theme-valentine {
-  --color-warm-sand: #FFF0F5 !important; /* Lavender Blush */
-  --color-vibrant-lilac: #C2185B !important; /* Rose Pink */
-  --color-watermelon-pink: #FF4081 !important; /* Light Pink */
-  --color-forest-green: #C2185B !important;
-  
-  --background: #FFF0F5 !important;
-  --primary: #C2185B !important;
-  --secondary: #FF4081 !important;
-  --accent: #FF4081 !important;
-  --destructive: #FF4081 !important;
-  --ring: #C2185B !important;
+  --color-warm-sand: #fff0f5 !important; /* Lavender Blush */
+  --color-vibrant-lilac: #c2185b !important; /* Rose Pink */
+  --color-watermelon-pink: #ff4081 !important; /* Light Pink */
+  --color-forest-green: #c2185b !important;
+
+  --background: #fff0f5 !important;
+  --primary: #c2185b !important;
+  --secondary: #ff4081 !important;
+  --accent: #ff4081 !important;
+  --destructive: #ff4081 !important;
+  --ring: #c2185b !important;
 }
 .theme-valentine .bg-warm-sand {
-  background-color: #FFF0F5 !important;
+  background-color: #fff0f5 !important;
 }
 .theme-valentine .text-forest-green {
-  color: #C2185B !important;
+  color: #c2185b !important;
 }
 .theme-valentine .text-vibrant-lilac {
-  color: #C2185B !important;
+  color: #c2185b !important;
 }
 .theme-valentine .text-watermelon-pink {
-  color: #FF4081 !important;
+  color: #ff4081 !important;
 }
 .theme-valentine .border-vibrant-lilac {
-  border-color: #C2185B !important;
+  border-color: #c2185b !important;
 }
 .theme-valentine .border-watermelon-pink {
-  border-color: #FF4081 !important;
+  border-color: #ff4081 !important;
 }
 .theme-valentine .border-forest-green {
-  border-color: #C2185B !important;
+  border-color: #c2185b !important;
 }
 .theme-valentine ::-webkit-scrollbar-thumb:hover {
-  background: #C2185B !important;
+  background: #c2185b !important;
 }
 .theme-valentine .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #C2185B !important;
+  background: #c2185b !important;
 }
 
 /* New Year Theme Overrides */
 .theme-newyear {
-  --color-warm-sand: #F2E3D5 !important; /* Champagne Cream */
-  --color-vibrant-lilac: #1A1A1A !important; /* Rich Charcoal */
-  --color-watermelon-pink: #D4AF37 !important; /* Sparkly Gold Accent */
-  --color-forest-green: #1A1A1A !important;
-  
-  --background: #F2E3D5 !important;
-  --primary: #1A1A1A !important;
-  --secondary: #D4AF37 !important;
-  --accent: #D4AF37 !important;
-  --destructive: #D4AF37 !important;
-  --ring: #1A1A1A !important;
+  --color-warm-sand: #f2e3d5 !important; /* Champagne Cream */
+  --color-vibrant-lilac: #1a1a1a !important; /* Rich Charcoal */
+  --color-watermelon-pink: #d4af37 !important; /* Sparkly Gold Accent */
+  --color-forest-green: #1a1a1a !important;
+
+  --background: #f2e3d5 !important;
+  --primary: #1a1a1a !important;
+  --secondary: #d4af37 !important;
+  --accent: #d4af37 !important;
+  --destructive: #d4af37 !important;
+  --ring: #1a1a1a !important;
 }
 .theme-newyear .bg-warm-sand {
-  background-color: #F2E3D5 !important;
+  background-color: #f2e3d5 !important;
 }
 .theme-newyear .text-forest-green {
-  color: #1A1A1A !important;
+  color: #1a1a1a !important;
 }
 .theme-newyear .text-vibrant-lilac {
-  color: #1A1A1A !important;
+  color: #1a1a1a !important;
 }
 .theme-newyear .text-watermelon-pink {
-  color: #D4AF37 !important;
+  color: #d4af37 !important;
 }
 .theme-newyear .border-vibrant-lilac {
-  border-color: #1A1A1A !important;
+  border-color: #1a1a1a !important;
 }
 .theme-newyear .border-watermelon-pink {
-  border-color: #D4AF37 !important;
+  border-color: #d4af37 !important;
 }
 .theme-newyear .border-forest-green {
-  border-color: #1A1A1A !important;
+  border-color: #1a1a1a !important;
 }
 .theme-newyear ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37 !important;
+  background: #d4af37 !important;
 }
 .theme-newyear .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37 !important;
+  background: #d4af37 !important;
 }

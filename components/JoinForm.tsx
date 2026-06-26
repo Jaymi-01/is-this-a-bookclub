@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import { User, Envelope, BookOpen, PaperPlaneRight, WhatsappLogo, CircleNotch } from "@phosphor-icons/react";
+import {
+  User,
+  Envelope,
+  BookOpen,
+  PaperPlaneRight,
+  WhatsappLogo,
+  CircleNotch,
+} from "@phosphor-icons/react";
 
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -28,9 +35,10 @@ export function JoinForm() {
     if (formData.name.trim().length < 2) {
       newErrors.name = "Please enter your full name (at least 2 characters).";
     } else if (formData.name.length > 50) {
-      newErrors.name = "Keep it sweet! Please keep your full name under 50 characters.";
+      newErrors.name =
+        "Keep it sweet! Please keep your full name under 50 characters.";
     }
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       newErrors.email = "Whoops! That doesn't look like a valid email address.";
@@ -38,7 +46,8 @@ export function JoinForm() {
 
     const phoneRegex = /^\+?[0-9]{10,15}$/;
     if (!phoneRegex.test(formData.whatsapp.replace(/\s/g, ""))) {
-      newErrors.whatsapp = "Please enter a valid WhatsApp number (e.g., +234...).";
+      newErrors.whatsapp =
+        "Please enter a valid WhatsApp number (e.g., +234...).";
     }
 
     if (!formData.favoriteGenre) {
@@ -52,7 +61,7 @@ export function JoinForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: null, message: "" });
-    
+
     // 1. Honeypot check: Bots will fill this out, humans won't.
     if (honeypot) {
       console.log("Bot detected!");
@@ -61,14 +70,20 @@ export function JoinForm() {
 
     // 2. Custom Validation
     if (!validate()) {
-      setSubmitStatus({ type: "error", message: "Please fix the errors in the form." });
+      setSubmitStatus({
+        type: "error",
+        message: "Please fix the errors in the form.",
+      });
       return;
     }
 
     // 3. Simple Rate Limit: Wait 30 seconds between submissions from the same session.
     const now = Date.now();
     if (now - lastSubmitted < 30000) {
-      setSubmitStatus({ type: "error", message: "Please wait a moment before sending another request." });
+      setSubmitStatus({
+        type: "error",
+        message: "Please wait a moment before sending another request.",
+      });
       return;
     }
 
@@ -80,12 +95,18 @@ export function JoinForm() {
         createdAt: serverTimestamp(),
       });
 
-      setSubmitStatus({ type: "success", message: "Welcome to the club! We'll be in touch soon. 📚" });
+      setSubmitStatus({
+        type: "success",
+        message: "Welcome to the club! We'll be in touch soon. 📚",
+      });
       setFormData({ name: "", email: "", whatsapp: "", favoriteGenre: "" });
       setLastSubmitted(now);
     } catch (error) {
       console.error("Error adding document: ", error);
-      setSubmitStatus({ type: "error", message: "Something went wrong. Please try again." });
+      setSubmitStatus({
+        type: "error",
+        message: "Something went wrong. Please try again.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -111,21 +132,30 @@ export function JoinForm() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+        >
           {/* Honeypot field (hidden from humans) */}
           <div className="hidden">
-            <label htmlFor="website">Don&apos;t fill this out if you&apos;re human</label>
-            <input 
+            <label htmlFor="website">
+              Don&apos;t fill this out if you&apos;re human
+            </label>
+            <input
               id="website"
-              type="text" 
+              type="text"
               autoComplete="off"
-              value={honeypot} 
-              onChange={(e) => setHoneypot(e.target.value)} 
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
             />
           </div>
 
           <div className="space-y-3">
-            <label htmlFor="name" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label
+              htmlFor="name"
+              className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2"
+            >
               <User weight="bold" className="text-vibrant-lilac" /> Full Name
             </label>
             <input
@@ -136,19 +166,33 @@ export function JoinForm() {
                 const val = e.target.value;
                 setFormData({ ...formData, name: val });
                 if (val.length > 50) {
-                  setErrors((prev) => ({ ...prev, name: "Keep it sweet! Please keep your full name under 50 characters." }));
-                } else if (errors.name === "Keep it sweet! Please keep your full name under 50 characters." || (val.trim().length >= 2 && errors.name)) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    name: "Keep it sweet! Please keep your full name under 50 characters.",
+                  }));
+                } else if (
+                  errors.name ===
+                    "Keep it sweet! Please keep your full name under 50 characters." ||
+                  (val.trim().length >= 2 && errors.name)
+                ) {
                   setErrors((prev) => ({ ...prev, name: "" }));
                 }
               }}
-              className={`w-full p-4 bg-white border-4 ${errors.name ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
+              className={`w-full p-4 bg-white border-4 ${errors.name ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="Jane Doe"
             />
-            {errors.name && <p className="text-watermelon-pink text-xs font-bold">{errors.name}</p>}
+            {errors.name && (
+              <p className="text-watermelon-pink text-xs font-bold">
+                {errors.name}
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
-            <label htmlFor="email" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label
+              htmlFor="email"
+              className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2"
+            >
               <Envelope weight="bold" className="text-watermelon-pink" /> Email
             </label>
             <input
@@ -167,17 +211,28 @@ export function JoinForm() {
                 const val = e.target.value;
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (val.trim() && !emailRegex.test(val)) {
-                  setErrors((prev) => ({ ...prev, email: "Whoops! That doesn't look like a valid email address." }));
+                  setErrors((prev) => ({
+                    ...prev,
+                    email:
+                      "Whoops! That doesn't look like a valid email address.",
+                  }));
                 }
               }}
-              className={`w-full p-4 bg-white border-4 ${errors.email ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
+              className={`w-full p-4 bg-white border-4 ${errors.email ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="jane@itabc.club"
             />
-            {errors.email && <p className="text-watermelon-pink text-xs font-bold">{errors.email}</p>}
+            {errors.email && (
+              <p className="text-watermelon-pink text-xs font-bold">
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
-            <label htmlFor="whatsapp" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label
+              htmlFor="whatsapp"
+              className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2"
+            >
               <WhatsappLogo weight="bold" className="text-green-600" /> WhatsApp
             </label>
             <input
@@ -187,31 +242,46 @@ export function JoinForm() {
               onChange={(e) => {
                 const val = e.target.value;
                 setFormData({ ...formData, whatsapp: val });
-                if (errors.whatsapp) setErrors(prev => ({ ...prev, whatsapp: "" }));
+                if (errors.whatsapp)
+                  setErrors((prev) => ({ ...prev, whatsapp: "" }));
               }}
               onBlur={(e) => {
                 const val = e.target.value.replace(/\D/g, "");
                 if (val && (val.length < 7 || val.length > 15)) {
-                  setErrors(prev => ({ ...prev, whatsapp: "Please enter a valid phone number." }));
+                  setErrors((prev) => ({
+                    ...prev,
+                    whatsapp: "Please enter a valid phone number.",
+                  }));
                 }
               }}
-              className={`w-full p-4 bg-white border-4 ${errors.whatsapp ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
+              className={`w-full p-4 bg-white border-4 ${errors.whatsapp ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="e.g. 080 1234 5678"
             />
-            <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-wider">Please provide a reachable WhatsApp number.</p>
-            {errors.whatsapp && <p className="text-watermelon-pink text-xs font-bold">{errors.whatsapp}</p>}
+            <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-wider">
+              Please provide a reachable WhatsApp number.
+            </p>
+            {errors.whatsapp && (
+              <p className="text-watermelon-pink text-xs font-bold">
+                {errors.whatsapp}
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
-            <label htmlFor="genre" className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2">
+            <label
+              htmlFor="genre"
+              className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2"
+            >
               <BookOpen weight="bold" className="text-forest-green" /> Genre
             </label>
             <div className="relative">
               <select
                 id="genre"
                 value={formData.favoriteGenre}
-                onChange={(e) => setFormData({ ...formData, favoriteGenre: e.target.value })}
-                className={`w-full p-4 bg-white border-4 ${errors.favoriteGenre ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all appearance-none font-bold`}
+                onChange={(e) =>
+                  setFormData({ ...formData, favoriteGenre: e.target.value })
+                }
+                className={`w-full p-4 bg-white border-4 ${errors.favoriteGenre ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all appearance-none font-bold`}
               >
                 <option value="">Select genre...</option>
                 <option value="fiction">Literary Fiction</option>
@@ -220,7 +290,11 @@ export function JoinForm() {
                 <option value="non-fiction">Non-Fiction</option>
               </select>
             </div>
-            {errors.favoriteGenre && <p className="text-watermelon-pink text-xs font-bold">{errors.favoriteGenre}</p>}
+            {errors.favoriteGenre && (
+              <p className="text-watermelon-pink text-xs font-bold">
+                {errors.favoriteGenre}
+              </p>
+            )}
           </div>
 
           <motion.button
@@ -232,7 +306,8 @@ export function JoinForm() {
           >
             {isSubmitting ? (
               <span className="flex items-center gap-3">
-                Sending... <CircleNotch className="animate-spin" size={24} weight="bold" />
+                Sending...{" "}
+                <CircleNotch className="animate-spin" size={24} weight="bold" />
               </span>
             ) : (
               <span className="flex items-center gap-3">
@@ -242,11 +317,13 @@ export function JoinForm() {
           </motion.button>
 
           {submitStatus.type && (
-            <p className={`md:col-span-2 text-center font-black text-lg mt-2 ${
-              submitStatus.type === "success" 
-                ? "text-forest-green" 
-                : "text-watermelon-pink"
-            }`}>
+            <p
+              className={`md:col-span-2 text-center font-black text-lg mt-2 ${
+                submitStatus.type === "success"
+                  ? "text-forest-green"
+                  : "text-watermelon-pink"
+              }`}
+            >
               {submitStatus.message}
             </p>
           )}

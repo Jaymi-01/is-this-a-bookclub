@@ -4,7 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useBookStore } from "@/lib/store";
 import { auth, db } from "@/lib/firebase";
 import { Book } from "@/lib/data";
-import { signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence, User } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+  setPersistence,
+  browserSessionPersistence,
+  User,
+} from "firebase/auth";
 import {
   BookOpen,
   Calendar,
@@ -26,11 +33,29 @@ import {
   DotsSix,
   CaretLeft,
   CaretRight,
-  Sparkle
+  Sparkle,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc, addDoc, serverTimestamp, Timestamp, QuerySnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
-import { motion, AnimatePresence, Reorder, useDragControls } from "motion/react";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  addDoc,
+  serverTimestamp,
+  Timestamp,
+  QuerySnapshot,
+  DocumentData,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
+import {
+  motion,
+  AnimatePresence,
+  Reorder,
+  useDragControls,
+} from "motion/react";
 
 import { toast } from "sonner";
 
@@ -55,18 +80,28 @@ export default function AdminPage() {
   const [cooldown, setCooldown] = useState(0);
 
   const {
-    currentBook, setCurrentBook,
-    pastBooks, setPastBooks,
+    currentBook,
+    setCurrentBook,
+    pastBooks,
+    setPastBooks,
     addPastBook,
-    meetingDate, setMeetingDate,
-    badgeText, setBadgeText,
-    booksFinished, setBooksFinished,
-    activeMembers, setActiveMembers,
-    communityImage, setCommunityImage,
-    signatures, setSignatures,
-    activeTheme, setActiveTheme,
-    festiveGreeting, setFestiveGreeting,
-    init
+    meetingDate,
+    setMeetingDate,
+    badgeText,
+    setBadgeText,
+    booksFinished,
+    setBooksFinished,
+    activeMembers,
+    setActiveMembers,
+    communityImage,
+    setCommunityImage,
+    signatures,
+    setSignatures,
+    activeTheme,
+    setActiveTheme,
+    festiveGreeting,
+    setFestiveGreeting,
+    init,
   } = useBookStore();
 
   const [bookForm, setBookForm] = useState({ ...currentBook });
@@ -76,11 +111,19 @@ export default function AdminPage() {
   const [communityImageUrl, setCommunityImageUrl] = useState(communityImage);
   const [signatureText, setSignatureText] = useState(signatures.join(", "));
   const [localActiveTheme, setLocalActiveTheme] = useState(activeTheme);
-  const [localFestiveGreeting, setLocalFestiveGreeting] = useState(festiveGreeting);
+  const [localFestiveGreeting, setLocalFestiveGreeting] =
+    useState(festiveGreeting);
   const [pastBookForm, setPastBookForm] = useState({
-    title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
+    title: "",
+    author: "",
+    cover: "",
+    summary: "",
+    rating: 5,
+    dateRead: "Feb 2026",
   });
-  const [pastBookErrors, setPastBookErrors] = useState<Record<string, string>>({});
+  const [pastBookErrors, setPastBookErrors] = useState<Record<string, string>>(
+    {},
+  );
 
   const validatePastBook = () => {
     const errors: Record<string, string> = {};
@@ -119,7 +162,10 @@ export default function AdminPage() {
 
   const [customMeetingDate, setCustomMeetingDate] = useState(meetingDate);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [deleteConfirmData, setDeleteConfirmData] = useState<{ id: string, email: string } | null>(null);
+  const [deleteConfirmData, setDeleteConfirmData] = useState<{
+    id: string;
+    email: string;
+  } | null>(null);
 
   const [localPastBooks, setLocalPastBooks] = useState<Book[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -226,10 +272,21 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!user) return;
-    const q = query(collection(db, "submissions"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
-      setSubmissions(snapshot.docs.map((d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() } as Submission)));
-    });
+    const q = query(
+      collection(db, "submissions"),
+      orderBy("createdAt", "desc"),
+    );
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot: QuerySnapshot<DocumentData>) => {
+        setSubmissions(
+          snapshot.docs.map(
+            (d: QueryDocumentSnapshot<DocumentData>) =>
+              ({ id: d.id, ...d.data() }) as Submission,
+          ),
+        );
+      },
+    );
     return () => unsubscribe();
   }, [user]);
 
@@ -240,7 +297,7 @@ export default function AdminPage() {
         admin: auth.currentUser?.email,
         action,
         details,
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
       });
     } catch (e) {
       console.error("Audit log failed", e);
@@ -256,7 +313,9 @@ export default function AdminPage() {
     const password = formData.get("password") as string;
 
     if (cooldown > Date.now()) {
-      toast.error(`Locked. Try again in ${Math.ceil((cooldown - Date.now()) / 1000)}s`);
+      toast.error(
+        `Locked. Try again in ${Math.ceil((cooldown - Date.now()) / 1000)}s`,
+      );
       return;
     }
 
@@ -320,7 +379,10 @@ export default function AdminPage() {
       await setBooksFinished(finishedCount);
       await setActiveMembers(membersCount);
       toast.success("Stats updated!");
-      logActivity("UPDATE_STATS", `Books: ${finishedCount}, Members: ${membersCount}`);
+      logActivity(
+        "UPDATE_STATS",
+        `Books: ${finishedCount}, Members: ${membersCount}`,
+      );
     } catch (error: unknown) {
       const e = error as Error;
       toast.error(`Error: ${e.message}`);
@@ -351,7 +413,10 @@ export default function AdminPage() {
       await setActiveTheme(localActiveTheme);
       await setFestiveGreeting(localFestiveGreeting);
       toast.success("Theme settings saved!");
-      logActivity("UPDATE_THEME", `Theme: ${localActiveTheme}, Greeting: ${localFestiveGreeting}`);
+      logActivity(
+        "UPDATE_THEME",
+        `Theme: ${localActiveTheme}, Greeting: ${localFestiveGreeting}`,
+      );
     } catch (error: unknown) {
       const e = error as Error;
       toast.error(`Error: ${e.message}`);
@@ -379,7 +444,10 @@ export default function AdminPage() {
     e.preventDefault();
     setLoadingAction("signatures");
     try {
-      const names = signatureText.split(",").map(s => s.trim()).filter(s => s !== "");
+      const names = signatureText
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s !== "");
       await setSignatures(names);
       toast.success("Signature wall updated!");
       logActivity("UPDATE_SIGNATURES", `Updated ${names.length} signatures`);
@@ -397,9 +465,12 @@ export default function AdminPage() {
       title: currentBook.title,
       author: currentBook.author,
       cover: currentBook.cover,
-      dateRead: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      dateRead: new Date().toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      }),
       rating: 4.5,
-      summary: "Completed Pick."
+      summary: "Completed Pick.",
     });
     setIsArchiveModalOpen(true);
   };
@@ -410,7 +481,12 @@ export default function AdminPage() {
     try {
       const ratingVal = isNaN(archiveForm.rating ?? 0) ? 0 : archiveForm.rating;
       await addPastBook({ ...archiveForm, rating: ratingVal });
-      await setCurrentBook({ id: "current", title: "TBD", author: "TBD", cover: "https://placehold.co/400x600?text=Next+Pick" });
+      await setCurrentBook({
+        id: "current",
+        title: "TBD",
+        author: "TBD",
+        cover: "https://placehold.co/400x600?text=Next+Pick",
+      });
       toast.success("Archived!");
       logActivity("ARCHIVE_BOOK", `Archived: ${archiveForm.title}`);
       setIsArchiveModalOpen(false);
@@ -427,7 +503,7 @@ export default function AdminPage() {
     if (window.confirm("Delete this book from archive?")) {
       setLoadingAction(`delete-past-${id}`);
       try {
-        const updatedBooks = pastBooks.filter(b => b.id !== id);
+        const updatedBooks = pastBooks.filter((b) => b.id !== id);
         await setPastBooks(updatedBooks);
         toast.success("Book removed from archive");
         logActivity("DELETE_PAST_BOOK", `Removed book ID: ${id}`);
@@ -455,9 +531,11 @@ export default function AdminPage() {
     if (!editingBookId || !editBookForm) return;
     setLoadingAction(`update-past-${editingBookId}`);
     try {
-      const updatedBooks = pastBooks.map(b => {
+      const updatedBooks = pastBooks.map((b) => {
         if (b.id === editingBookId) {
-          const ratingVal = isNaN(editBookForm.rating ?? 0) ? 0 : editBookForm.rating;
+          const ratingVal = isNaN(editBookForm.rating ?? 0)
+            ? 0
+            : editBookForm.rating;
           return { ...editBookForm, rating: ratingVal };
         }
         return b;
@@ -480,15 +558,24 @@ export default function AdminPage() {
       toast.success("No requests to download.");
       return;
     }
-    logActivity("DOWNLOAD_CSV", `Downloaded ${submissions.length} member requests`);
+    logActivity(
+      "DOWNLOAD_CSV",
+      `Downloaded ${submissions.length} member requests`,
+    );
 
-    const headers = ["Name", "Email", "WhatsApp", "Favorite Genre", "Date Requested"];
-    const rows = submissions.map(sub => [
+    const headers = [
+      "Name",
+      "Email",
+      "WhatsApp",
+      "Favorite Genre",
+      "Date Requested",
+    ];
+    const rows = submissions.map((sub) => [
       sub.name,
       sub.email,
       sub.whatsapp,
       sub.favoriteGenre,
-      sub.createdAt?.toDate ? sub.createdAt.toDate().toLocaleString() : ""
+      sub.createdAt?.toDate ? sub.createdAt.toDate().toLocaleString() : "",
     ]);
 
     const xmlHeader = `<?xml version="1.0"?>
@@ -501,12 +588,16 @@ export default function AdminPage() {
  <Worksheet ss:Name="Requests">
   <Table>
    <Row>
-    ${headers.map(h => `<Cell><Data ss:Type="String">${h}</Data></Cell>`).join("")}
+    ${headers.map((h) => `<Cell><Data ss:Type="String">${h}</Data></Cell>`).join("")}
    </Row>
-   ${rows.map(row => `
+   ${rows
+     .map(
+       (row) => `
    <Row>
-    ${row.map(cell => `<Cell><Data ss:Type="String">${cell}</Data></Cell>`).join("")}
-   </Row>`).join("")}
+    ${row.map((cell) => `<Cell><Data ss:Type="String">${cell}</Data></Cell>`).join("")}
+   </Row>`,
+     )
+     .join("")}
   </Table>
  </Worksheet>
 </Workbook>`;
@@ -515,14 +606,19 @@ export default function AdminPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `ITABC_Requests_${new Date().toISOString().split('T')[0]}.xls`;
+    link.download = `ITABC_Requests_${new Date().toISOString().split("T")[0]}.xls`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     toast.success("Excel File Downloaded!");
   };
 
-  if (isAuthLoading) return <div className="min-h-screen bg-parchment flex items-center justify-center font-serif font-bold text-2xl">Loading ITABC Admin...</div>;
+  if (isAuthLoading)
+    return (
+      <div className="min-h-screen bg-parchment flex items-center justify-center font-serif font-bold text-2xl">
+        Loading ITABC Admin...
+      </div>
+    );
 
   if (!user) {
     return (
@@ -536,7 +632,9 @@ export default function AdminPage() {
             <div className="w-16 h-16 bg-vibrant-lilac rounded-2xl border-4 border-rich-charcoal flex items-center justify-center mx-auto mb-4">
               <LockKey size={32} weight="fill" className="text-white" />
             </div>
-            <h1 className="text-3xl font-serif font-black text-rich-charcoal">Admin Access</h1>
+            <h1 className="text-3xl font-serif font-black text-rich-charcoal">
+              Admin Access
+            </h1>
             <p className="text-rich-charcoal/60 mt-2">ITABC Dashboard</p>
           </div>
 
@@ -545,24 +643,30 @@ export default function AdminPage() {
               type="text"
               className="hidden"
               value={honeypot}
-              onChange={e => setHoneypot(e.target.value)}
+              onChange={(e) => setHoneypot(e.target.value)}
               tabIndex={-1}
               autoComplete="off"
             />
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">Email</label>
+              <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">
+                Email
+              </label>
               <input
                 name="email"
-                type="email" required
+                type="email"
+                required
                 autoComplete="email"
                 className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-white focus:ring-4 focus:ring-vibrant-lilac outline-none"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">Password</label>
+              <label className="text-xs font-black uppercase tracking-widest text-rich-charcoal/40">
+                Password
+              </label>
               <input
                 name="password"
-                type="password" required
+                type="password"
+                required
                 autoComplete="current-password"
                 className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-white focus:ring-4 focus:ring-vibrant-lilac outline-none"
                 style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
@@ -573,10 +677,17 @@ export default function AdminPage() {
               disabled={isLoggingIn}
               className="w-full py-5 bg-vibrant-lilac text-white font-black text-xl rounded-xl border-4 border-rich-charcoal shadow-[6px_6px_0px_#1A1A1A] hover:shadow-[10px_10px_0px_#1A1A1A] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
             >
-              {isLoggingIn ? <CircleNotch className="animate-spin" size={24} weight="bold" /> : "Login to ITABC"}
+              {isLoggingIn ? (
+                <CircleNotch className="animate-spin" size={24} weight="bold" />
+              ) : (
+                "Login to ITABC"
+              )}
             </button>
           </form>
-          <Link href="/" className="block text-center mt-8 font-bold text-rich-charcoal/40 hover:text-rich-charcoal">
+          <Link
+            href="/"
+            className="block text-center mt-8 font-bold text-rich-charcoal/40 hover:text-rich-charcoal"
+          >
             ← Back to Main Site
           </Link>
         </motion.div>
@@ -590,19 +701,33 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] flex items-center justify-center">
-              <img src="/logo.png" alt="ITABC" className="h-8 w-8 rounded-full object-cover" />
+              <img
+                src="/logo.png"
+                alt="ITABC"
+                className="h-8 w-8 rounded-full object-cover"
+              />
             </div>
             <div>
-              <h1 className="text-xl md:text-2xl font-serif font-black text-rich-charcoal leading-none">Control Center</h1>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-vibrant-lilac">ITABC Admin Dashboard</span>
+              <h1 className="text-xl md:text-2xl font-serif font-black text-rich-charcoal leading-none">
+                Control Center
+              </h1>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-vibrant-lilac">
+                ITABC Admin Dashboard
+              </span>
             </div>
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <Link href="/" className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all">
+            <Link
+              href="/"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all"
+            >
               <House weight="bold" size={18} /> View Site
             </Link>
-            <button onClick={handleLogout} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-watermelon-pink text-white rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all">
+            <button
+              onClick={handleLogout}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-watermelon-pink text-white rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all"
+            >
               <SignOut weight="bold" size={18} /> Logout
             </button>
           </div>
@@ -621,39 +746,94 @@ export default function AdminPage() {
                       <BookOpen size={24} weight="fill" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-serif font-bold">Monthly Spotlight</h2>
-                      <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">Update the current read</p>
+                      <h2 className="text-2xl font-serif font-bold">
+                        Monthly Spotlight
+                      </h2>
+                      <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">
+                        Update the current read
+                      </p>
                     </div>
                   </div>
                   <button
                     onClick={handleOpenArchiveModal}
-                    disabled={loadingAction === "archiving" || isArchiveModalOpen}
+                    disabled={
+                      loadingAction === "archiving" || isArchiveModalOpen
+                    }
                     className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#F06595] font-black text-xs uppercase tracking-widest hover:translate-y-1 hover:shadow-none transition-all disabled:opacity-50"
                   >
-                    {loadingAction === "archiving" ? <CircleNotch className="animate-spin" /> : <Archive weight="bold" />} Archive Current Read
+                    {loadingAction === "archiving" ? (
+                      <CircleNotch className="animate-spin" />
+                    ) : (
+                      <Archive weight="bold" />
+                    )}{" "}
+                    Archive Current Read
                   </button>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-8">
                   <div className="w-full md:w-48 shrink-0">
                     <div className="aspect-[3/4.5] bg-parchment rounded-2xl border-4 border-rich-charcoal overflow-hidden shadow-[6px_6px_0px_#1A1A1A]">
-                      {bookForm.cover ? <img src={bookForm.cover} alt="Preview" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[10px] font-black uppercase text-rich-charcoal/20">No Cover</div>}
+                      {bookForm.cover ? (
+                        <img
+                          src={bookForm.cover}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-[10px] font-black uppercase text-rich-charcoal/20">
+                          No Cover
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <form onSubmit={handleUpdateCurrent} className="flex-1 space-y-6">
+                  <form
+                    onSubmit={handleUpdateCurrent}
+                    className="flex-1 space-y-6"
+                  >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Title</label>
-                        <input value={bookForm.title} onChange={e => setBookForm({ ...bookForm, title: e.target.value })} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                          Title
+                        </label>
+                        <input
+                          value={bookForm.title}
+                          onChange={(e) =>
+                            setBookForm({ ...bookForm, title: e.target.value })
+                          }
+                          className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Author</label>
-                        <input value={bookForm.author} onChange={e => setBookForm({ ...bookForm, author: e.target.value })} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                          Author
+                        </label>
+                        <input
+                          value={bookForm.author}
+                          onChange={(e) =>
+                            setBookForm({ ...bookForm, author: e.target.value })
+                          }
+                          className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold"
+                        />
                       </div>
                     </div>
-                    <input value={bookForm.cover} onChange={e => setBookForm({ ...bookForm, cover: e.target.value })} className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs" placeholder="Cover URL" />
-                    <button type="submit" disabled={!!loadingAction} className="w-full bg-vibrant-lilac text-white font-black py-5 rounded-xl border-4 border-rich-charcoal shadow-[6px_6px_0px_#1A1A1A] uppercase text-sm disabled:opacity-50">
-                      {loadingAction === "spotlight" ? <CircleNotch className="animate-spin" size={24} /> : "Update Spotlight"}
+                    <input
+                      value={bookForm.cover}
+                      onChange={(e) =>
+                        setBookForm({ ...bookForm, cover: e.target.value })
+                      }
+                      className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs"
+                      placeholder="Cover URL"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!!loadingAction}
+                      className="w-full bg-vibrant-lilac text-white font-black py-5 rounded-xl border-4 border-rich-charcoal shadow-[6px_6px_0px_#1A1A1A] uppercase text-sm disabled:opacity-50"
+                    >
+                      {loadingAction === "spotlight" ? (
+                        <CircleNotch className="animate-spin" size={24} />
+                      ) : (
+                        "Update Spotlight"
+                      )}
                     </button>
                   </form>
                 </div>
@@ -665,55 +845,184 @@ export default function AdminPage() {
                   <div className="p-3 bg-forest-green text-white rounded-xl">
                     <Plus size={24} weight="bold" />
                   </div>
-                  <h2 className="text-2xl font-serif font-bold">Manual Archive Entry</h2>
+                  <h2 className="text-2xl font-serif font-bold">
+                    Manual Archive Entry
+                  </h2>
                 </div>
-                <form onSubmit={async (e) => {
-                  e.preventDefault();
-                  if (!validatePastBook()) {
-                    toast.error("Please fix the errors in the form.");
-                    return;
-                  }
-                  setLoadingAction("manualArchive");
-                  try {
-                    const ratingVal = isNaN(pastBookForm.rating ?? 0) ? 0 : pastBookForm.rating;
-                    await addPastBook({ ...pastBookForm, rating: ratingVal, id: Math.random().toString() });
-                    toast.success("Added!");
-                    logActivity("MANUAL_ARCHIVE", `Manually added: ${pastBookForm.title}`);
-                    setPastBookForm({ title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026" });
-                    setPastBookErrors({});
-                  } catch (error: unknown) {
-                    const e = error as Error;
-                    toast.error(`Error: ${e.message}`);
-                  } finally {
-                    setLoadingAction(null);
-                  }
-                }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!validatePastBook()) {
+                      toast.error("Please fix the errors in the form.");
+                      return;
+                    }
+                    setLoadingAction("manualArchive");
+                    try {
+                      const ratingVal = isNaN(pastBookForm.rating ?? 0)
+                        ? 0
+                        : pastBookForm.rating;
+                      await addPastBook({
+                        ...pastBookForm,
+                        rating: ratingVal,
+                        id: Math.random().toString(),
+                      });
+                      toast.success("Added!");
+                      logActivity(
+                        "MANUAL_ARCHIVE",
+                        `Manually added: ${pastBookForm.title}`,
+                      );
+                      setPastBookForm({
+                        title: "",
+                        author: "",
+                        cover: "",
+                        summary: "",
+                        rating: 5,
+                        dateRead: "Feb 2026",
+                      });
+                      setPastBookErrors({});
+                    } catch (error: unknown) {
+                      const e = error as Error;
+                      toast.error(`Error: ${e.message}`);
+                    } finally {
+                      setLoadingAction(null);
+                    }
+                  }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
                   <div className="flex flex-col gap-1">
-                    <input placeholder="Title" value={pastBookForm.title} onChange={e => { setPastBookForm({ ...pastBookForm, title: e.target.value }); if (pastBookErrors.title) setPastBookErrors({ ...pastBookErrors, title: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                    {pastBookErrors.title && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.title}</span>}
+                    <input
+                      placeholder="Title"
+                      value={pastBookForm.title}
+                      onChange={(e) => {
+                        setPastBookForm({
+                          ...pastBookForm,
+                          title: e.target.value,
+                        });
+                        if (pastBookErrors.title)
+                          setPastBookErrors({ ...pastBookErrors, title: "" });
+                      }}
+                      className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold"
+                    />
+                    {pastBookErrors.title && (
+                      <span className="text-xs text-watermelon-pink font-bold pl-1">
+                        {pastBookErrors.title}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <input placeholder="Author" value={pastBookForm.author} onChange={e => { setPastBookForm({ ...pastBookForm, author: e.target.value }); if (pastBookErrors.author) setPastBookErrors({ ...pastBookErrors, author: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                    {pastBookErrors.author && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.author}</span>}
+                    <input
+                      placeholder="Author"
+                      value={pastBookForm.author}
+                      onChange={(e) => {
+                        setPastBookForm({
+                          ...pastBookForm,
+                          author: e.target.value,
+                        });
+                        if (pastBookErrors.author)
+                          setPastBookErrors({ ...pastBookErrors, author: "" });
+                      }}
+                      className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold"
+                    />
+                    {pastBookErrors.author && (
+                      <span className="text-xs text-watermelon-pink font-bold pl-1">
+                        {pastBookErrors.author}
+                      </span>
+                    )}
                   </div>
                   <div className="md:col-span-2 flex flex-col gap-1">
-                    <input placeholder="Cover URL" value={pastBookForm.cover} onChange={e => { setPastBookForm({ ...pastBookForm, cover: e.target.value }); if (pastBookErrors.cover) setPastBookErrors({ ...pastBookErrors, cover: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment" />
-                    {pastBookErrors.cover && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.cover}</span>}
+                    <input
+                      placeholder="Cover URL"
+                      value={pastBookForm.cover}
+                      onChange={(e) => {
+                        setPastBookForm({
+                          ...pastBookForm,
+                          cover: e.target.value,
+                        });
+                        if (pastBookErrors.cover)
+                          setPastBookErrors({ ...pastBookErrors, cover: "" });
+                      }}
+                      className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment"
+                    />
+                    {pastBookErrors.cover && (
+                      <span className="text-xs text-watermelon-pink font-bold pl-1">
+                        {pastBookErrors.cover}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <input placeholder="Month" value={pastBookForm.dateRead} onChange={e => { setPastBookForm({ ...pastBookForm, dateRead: e.target.value }); if (pastBookErrors.dateRead) setPastBookErrors({ ...pastBookErrors, dateRead: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                    {pastBookErrors.dateRead && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.dateRead}</span>}
+                    <input
+                      placeholder="Month"
+                      value={pastBookForm.dateRead}
+                      onChange={(e) => {
+                        setPastBookForm({
+                          ...pastBookForm,
+                          dateRead: e.target.value,
+                        });
+                        if (pastBookErrors.dateRead)
+                          setPastBookErrors({
+                            ...pastBookErrors,
+                            dateRead: "",
+                          });
+                      }}
+                      className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold"
+                    />
+                    {pastBookErrors.dateRead && (
+                      <span className="text-xs text-watermelon-pink font-bold pl-1">
+                        {pastBookErrors.dateRead}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <input type="number" step="0.1" value={pastBookForm.rating} onChange={e => { setPastBookForm({ ...pastBookForm, rating: parseFloat(e.target.value) }); if (pastBookErrors.rating) setPastBookErrors({ ...pastBookErrors, rating: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                    {pastBookErrors.rating && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.rating}</span>}
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={pastBookForm.rating}
+                      onChange={(e) => {
+                        setPastBookForm({
+                          ...pastBookForm,
+                          rating: parseFloat(e.target.value),
+                        });
+                        if (pastBookErrors.rating)
+                          setPastBookErrors({ ...pastBookErrors, rating: "" });
+                      }}
+                      className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold"
+                    />
+                    {pastBookErrors.rating && (
+                      <span className="text-xs text-watermelon-pink font-bold pl-1">
+                        {pastBookErrors.rating}
+                      </span>
+                    )}
                   </div>
                   <div className="md:col-span-2 flex flex-col gap-1">
-                    <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => { setPastBookForm({ ...pastBookForm, summary: e.target.value }); if (pastBookErrors.summary) setPastBookErrors({ ...pastBookErrors, summary: "" }); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32 resize-none" />
-                    {pastBookErrors.summary && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.summary}</span>}
+                    <textarea
+                      placeholder="Summary"
+                      value={pastBookForm.summary}
+                      onChange={(e) => {
+                        setPastBookForm({
+                          ...pastBookForm,
+                          summary: e.target.value,
+                        });
+                        if (pastBookErrors.summary)
+                          setPastBookErrors({ ...pastBookErrors, summary: "" });
+                      }}
+                      className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32 resize-none"
+                    />
+                    {pastBookErrors.summary && (
+                      <span className="text-xs text-watermelon-pink font-bold pl-1">
+                        {pastBookErrors.summary}
+                      </span>
+                    )}
                   </div>
-                  <button type="submit" disabled={!!loadingAction} className="md:col-span-2 bg-forest-green text-white font-black p-4 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] uppercase disabled:opacity-50">
-                    {loadingAction === "manualArchive" ? <CircleNotch className="animate-spin" size={24} /> : "Add Past Book"}
+                  <button
+                    type="submit"
+                    disabled={!!loadingAction}
+                    className="md:col-span-2 bg-forest-green text-white font-black p-4 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] uppercase disabled:opacity-50"
+                  >
+                    {loadingAction === "manualArchive" ? (
+                      <CircleNotch className="animate-spin" size={24} />
+                    ) : (
+                      "Add Past Book"
+                    )}
                   </button>
                 </form>
               </section>
@@ -725,8 +1034,12 @@ export default function AdminPage() {
                     <Archive size={24} weight="fill" />
                   </div>
                   <div>
-                    <h2 className="text-xl md:text-2xl font-serif font-bold">Manage Archive</h2>
-                    <p className="text-[10px] md:text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">Edit or remove past books</p>
+                    <h2 className="text-xl md:text-2xl font-serif font-bold">
+                      Manage Archive
+                    </h2>
+                    <p className="text-[10px] md:text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">
+                      Edit or remove past books
+                    </p>
                   </div>
                 </div>
 
@@ -737,7 +1050,12 @@ export default function AdminPage() {
                     </div>
                   ) : (
                     <>
-                      <Reorder.Group axis="y" values={currentItems} onReorder={handlePageReorder} className="space-y-6">
+                      <Reorder.Group
+                        axis="y"
+                        values={currentItems}
+                        onReorder={handlePageReorder}
+                        className="space-y-6"
+                      >
                         {currentItems.map((book) => (
                           <ReorderableBookItem
                             key={book.id}
@@ -760,21 +1078,27 @@ export default function AdminPage() {
                           <button
                             type="button"
                             disabled={currentPage === 1}
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            onClick={() =>
+                              setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
                             className="p-2.5 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center animate-transition"
                           >
                             <CaretLeft size={16} weight="bold" />
                           </button>
 
-                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          {Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1,
+                          ).map((page) => (
                             <button
                               key={page}
                               type="button"
                               onClick={() => setCurrentPage(page)}
-                              className={`w-10 h-10 font-bold rounded-xl border-2 border-rich-charcoal transition-all flex items-center justify-center ${currentPage === page
+                              className={`w-10 h-10 font-bold rounded-xl border-2 border-rich-charcoal transition-all flex items-center justify-center ${
+                                currentPage === page
                                   ? "bg-vibrant-lilac text-white shadow-none translate-y-[2px]"
                                   : "bg-white text-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none"
-                                }`}
+                              }`}
                             >
                               {page}
                             </button>
@@ -783,7 +1107,11 @@ export default function AdminPage() {
                           <button
                             type="button"
                             disabled={currentPage === totalPages}
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            onClick={() =>
+                              setCurrentPage((prev) =>
+                                Math.min(prev + 1, totalPages),
+                              )
+                            }
                             className="p-2.5 bg-white text-rich-charcoal rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center animate-transition"
                           >
                             <CaretRight size={16} weight="bold" />
@@ -803,15 +1131,24 @@ export default function AdminPage() {
                   <div className="p-3 bg-vibrant-lilac text-white rounded-xl">
                     <Camera size={20} weight="fill" />
                   </div>
-                  <h2 className="text-xl font-serif font-bold">Community Photo</h2>
+                  <h2 className="text-xl font-serif font-bold">
+                    Community Photo
+                  </h2>
                 </div>
-                <form onSubmit={handleUpdateCommunityImage} className="space-y-4">
+                <form
+                  onSubmit={handleUpdateCommunityImage}
+                  className="space-y-4"
+                >
                   <div className="aspect-video w-full bg-parchment rounded-xl border-4 border-rich-charcoal overflow-hidden mb-4 shadow-[4px_4px_0px_#1A1A1A]">
-                    <img src={communityImageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    <img
+                      src={communityImageUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <input
                     value={communityImageUrl}
-                    onChange={e => setCommunityImageUrl(e.target.value)}
+                    onChange={(e) => setCommunityImageUrl(e.target.value)}
                     className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-medium text-xs"
                     placeholder="Paste Image URL here..."
                   />
@@ -820,7 +1157,15 @@ export default function AdminPage() {
                     disabled={!!loadingAction}
                     className="w-full bg-vibrant-lilac text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2 disabled:opacity-50"
                   >
-                    {loadingAction === "community" ? <CircleNotch className="animate-spin" size={20} weight="bold" /> : "Update Vibe Photo"}
+                    {loadingAction === "community" ? (
+                      <CircleNotch
+                        className="animate-spin"
+                        size={20}
+                        weight="bold"
+                      />
+                    ) : (
+                      "Update Vibe Photo"
+                    )}
                   </button>
                 </form>
               </section>
@@ -831,15 +1176,18 @@ export default function AdminPage() {
                   <div className="p-3 bg-watermelon-pink text-rich-charcoal rounded-xl">
                     <PencilLine size={20} weight="fill" />
                   </div>
-                  <h2 className="text-xl font-serif font-bold">Signature Wall</h2>
+                  <h2 className="text-xl font-serif font-bold">
+                    Signature Wall
+                  </h2>
                 </div>
                 <form onSubmit={handleUpdateSignatures} className="space-y-4">
                   <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-widest leading-relaxed">
-                    Enter names separated by commas. These will appear blurred in the background of the &quot;Family&quot; section.
+                    Enter names separated by commas. These will appear blurred
+                    in the background of the &quot;Family&quot; section.
                   </p>
                   <textarea
                     value={signatureText}
-                    onChange={e => setSignatureText(e.target.value)}
+                    onChange={(e) => setSignatureText(e.target.value)}
                     className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm h-32 focus:ring-4 focus:ring-watermelon-pink outline-none resize-none"
                     placeholder="Tunde, Amaka, Chidi, Joel..."
                   />
@@ -848,7 +1196,15 @@ export default function AdminPage() {
                     disabled={!!loadingAction}
                     className="w-full bg-rich-charcoal text-parchment font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#F06595] text-xs uppercase flex items-center justify-center gap-2 disabled:opacity-50"
                   >
-                    {loadingAction === "signatures" ? <CircleNotch className="animate-spin" size={20} weight="bold" /> : "Save Signatures"}
+                    {loadingAction === "signatures" ? (
+                      <CircleNotch
+                        className="animate-spin"
+                        size={20}
+                        weight="bold"
+                      />
+                    ) : (
+                      "Save Signatures"
+                    )}
                   </button>
                 </form>
               </section>
@@ -864,16 +1220,42 @@ export default function AdminPage() {
                 <form onSubmit={handleUpdateStats} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Finished</label>
-                      <input type="number" value={finishedCount} onChange={e => setFinishedCount(parseInt(e.target.value))} className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm" />
+                      <label className="text-[10px] font-black uppercase text-rich-charcoal/40">
+                        Finished
+                      </label>
+                      <input
+                        type="number"
+                        value={finishedCount}
+                        onChange={(e) =>
+                          setFinishedCount(parseInt(e.target.value))
+                        }
+                        className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm"
+                      />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Active</label>
-                      <input type="number" value={membersCount} onChange={e => setMembersCount(parseInt(e.target.value))} className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm" />
+                      <label className="text-[10px] font-black uppercase text-rich-charcoal/40">
+                        Active
+                      </label>
+                      <input
+                        type="number"
+                        value={membersCount}
+                        onChange={(e) =>
+                          setMembersCount(parseInt(e.target.value))
+                        }
+                        className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm"
+                      />
                     </div>
                   </div>
-                  <button type="submit" disabled={!!loadingAction} className="w-full bg-forest-green text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50">
-                    {loadingAction === "stats" ? <CircleNotch className="animate-spin" size={20} /> : "Update Stats"}
+                  <button
+                    type="submit"
+                    disabled={!!loadingAction}
+                    className="w-full bg-forest-green text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50"
+                  >
+                    {loadingAction === "stats" ? (
+                      <CircleNotch className="animate-spin" size={20} />
+                    ) : (
+                      "Update Stats"
+                    )}
                   </button>
                 </form>
               </section>
@@ -884,11 +1266,15 @@ export default function AdminPage() {
                   <div className="p-3 bg-watermelon-pink text-white rounded-xl">
                     <Sparkle size={20} weight="fill" />
                   </div>
-                  <h2 className="text-xl font-serif font-bold">Seasonal Themes</h2>
+                  <h2 className="text-xl font-serif font-bold">
+                    Seasonal Themes
+                  </h2>
                 </div>
                 <form onSubmit={handleUpdateFestive} className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Select Active Theme</label>
+                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">
+                      Select Active Theme
+                    </label>
                     <select
                       value={localActiveTheme}
                       onChange={(e) => {
@@ -896,13 +1282,21 @@ export default function AdminPage() {
                         setLocalActiveTheme(nextTheme);
                         // Auto-fill default holiday greetings
                         if (nextTheme === "christmas") {
-                          setLocalFestiveGreeting("Merry Christmas & Happy New Year from ITABC! 🎄✨");
+                          setLocalFestiveGreeting(
+                            "Merry Christmas & Happy New Year from ITABC! 🎄✨",
+                          );
                         } else if (nextTheme === "eid") {
-                          setLocalFestiveGreeting("Eid Mubarak to all our Muslim Bookworms! 🌙✨");
+                          setLocalFestiveGreeting(
+                            "Eid Mubarak to all our Muslim Bookworms! 🌙✨",
+                          );
                         } else if (nextTheme === "valentine") {
-                          setLocalFestiveGreeting("Happy Valentine's Day! Curl up with a good love story today 💖📚");
+                          setLocalFestiveGreeting(
+                            "Happy Valentine's Day! Curl up with a good love story today 💖📚",
+                          );
                         } else if (nextTheme === "newyear") {
-                          setLocalFestiveGreeting("Happy New Year! Wishing you 365 days of new pages 🎆🥂");
+                          setLocalFestiveGreeting(
+                            "Happy New Year! Wishing you 365 days of new pages 🎆🥂",
+                          );
                         } else {
                           setLocalFestiveGreeting("");
                         }
@@ -912,21 +1306,35 @@ export default function AdminPage() {
                       <option value="default">Default Style</option>
                       <option value="christmas">Christmas Theme 🎄</option>
                       <option value="eid">Eid Theme 🌙</option>
-                      <option value="valentine">Valentine`&lsquo;`s Day Theme 💖</option>
-                      <option value="newyear">New Year Celebration Theme 🎆</option>
+                      <option value="valentine">
+                        Valentine`&lsquo;`s Day Theme 💖
+                      </option>
+                      <option value="newyear">
+                        New Year Celebration Theme 🎆
+                      </option>
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">Greeting Banner Text (Optional)</label>
+                    <label className="text-[10px] font-black uppercase text-rich-charcoal/40">
+                      Greeting Banner Text (Optional)
+                    </label>
                     <input
                       value={localFestiveGreeting}
-                      onChange={e => setLocalFestiveGreeting(e.target.value)}
+                      onChange={(e) => setLocalFestiveGreeting(e.target.value)}
                       className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm focus:ring-4 focus:ring-watermelon-pink outline-none"
                       placeholder="Custom greeting banner message..."
                     />
                   </div>
-                  <button type="submit" disabled={!!loadingAction} className="w-full bg-watermelon-pink text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50 flex items-center justify-center gap-2">
-                    {loadingAction === "festive" ? <CircleNotch className="animate-spin" size={20} /> : "Save Theme Settings"}
+                  <button
+                    type="submit"
+                    disabled={!!loadingAction}
+                    className="w-full bg-watermelon-pink text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loadingAction === "festive" ? (
+                      <CircleNotch className="animate-spin" size={20} />
+                    ) : (
+                      "Save Theme Settings"
+                    )}
                   </button>
                 </form>
               </section>
@@ -934,38 +1342,83 @@ export default function AdminPage() {
               {/* Badge & Timer */}
               <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A] space-y-8">
                 <form onSubmit={handleUpdateBadge} className="space-y-4">
-                  <div className="flex items-center gap-2 mb-2 font-serif font-bold"><Plus size={18} /> Badge</div>
-                  <input value={currentBadge} onChange={e => setCurrentBadge(e.target.value)} className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm" />
-                  <button type="submit" disabled={!!loadingAction} className="w-full bg-vibrant-lilac text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50">
-                    {loadingAction === "badge" ? <CircleNotch className="animate-spin" size={20} /> : "Update Badge"}
+                  <div className="flex items-center gap-2 mb-2 font-serif font-bold">
+                    <Plus size={18} /> Badge
+                  </div>
+                  <input
+                    value={currentBadge}
+                    onChange={(e) => setCurrentBadge(e.target.value)}
+                    className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!!loadingAction}
+                    className="w-full bg-vibrant-lilac text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50"
+                  >
+                    {loadingAction === "badge" ? (
+                      <CircleNotch className="animate-spin" size={20} />
+                    ) : (
+                      "Update Badge"
+                    )}
                   </button>
                 </form>
-                <form onSubmit={handleUpdateTimer} className="space-y-4 border-t-4 border-dashed border-rich-charcoal/10 pt-8">
-                  <div className="flex items-center gap-2 mb-2 font-serif font-bold"><Calendar size={18} /> Timer</div>
-                  <input type="datetime-local" value={customMeetingDate} onChange={e => setCustomMeetingDate(e.target.value)} className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm" />
-                  <button type="submit" disabled={!!loadingAction} className="w-full bg-watermelon-pink text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50">
-                    {loadingAction === "timer" ? <CircleNotch className="animate-spin" size={20} /> : "Update Timer"}
+                <form
+                  onSubmit={handleUpdateTimer}
+                  className="space-y-4 border-t-4 border-dashed border-rich-charcoal/10 pt-8"
+                >
+                  <div className="flex items-center gap-2 mb-2 font-serif font-bold">
+                    <Calendar size={18} /> Timer
+                  </div>
+                  <input
+                    type="datetime-local"
+                    value={customMeetingDate}
+                    onChange={(e) => setCustomMeetingDate(e.target.value)}
+                    className="w-full p-3 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!!loadingAction}
+                    className="w-full bg-watermelon-pink text-white font-black p-3 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] text-xs uppercase disabled:opacity-50"
+                  >
+                    {loadingAction === "timer" ? (
+                      <CircleNotch className="animate-spin" size={20} />
+                    ) : (
+                      "Update Timer"
+                    )}
                   </button>
                 </form>
               </section>
 
               {/* Requests */}
               <section className="bg-parchment p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A] max-h-[500px] overflow-y-auto">
-                <h2 className="text-xl font-serif font-bold text-rich-charcoal mb-6 flex items-center gap-2"><Users weight="fill" /> Requests ({submissions.length})</h2>
+                <h2 className="text-xl font-serif font-bold text-rich-charcoal mb-6 flex items-center gap-2">
+                  <Users weight="fill" /> Requests ({submissions.length})
+                </h2>
                 <div className="space-y-4">
                   {submissions.map((sub) => (
-                    <div key={sub.id} className="bg-white p-4 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] relative">
+                    <div
+                      key={sub.id}
+                      className="bg-white p-4 rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] relative"
+                    >
                       <button
                         disabled={loadingAction === `delete-${sub.id}`}
-                        onClick={() => setDeleteConfirmData({ id: sub.id, email: sub.email })}
+                        onClick={() =>
+                          setDeleteConfirmData({ id: sub.id, email: sub.email })
+                        }
                         className="absolute top-2 right-2 text-rich-charcoal/20 hover:text-watermelon-pink transition-colors"
                       >
-                        {loadingAction === `delete-${sub.id}` ? <CircleNotch className="animate-spin" /> : <Trash weight="bold" size={18} />}
+                        {loadingAction === `delete-${sub.id}` ? (
+                          <CircleNotch className="animate-spin" />
+                        ) : (
+                          <Trash weight="bold" size={18} />
+                        )}
                       </button>
-                      <h4 className="font-black text-xs uppercase">{sub.name}</h4>
+                      <h4 className="font-black text-xs uppercase">
+                        {sub.name}
+                      </h4>
                       <div className="flex flex-col gap-1 mt-1">
                         <a
-                          href={`https://wa.me/${sub.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
+                          href={`https://wa.me/${sub.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[10px] font-black text-green-600 uppercase hover:underline"
@@ -978,13 +1431,18 @@ export default function AdminPage() {
                         >
                           <Envelope weight="fill" /> Invite to Email
                         </a>
-                        <div className="text-[9px] font-bold text-rich-charcoal/40 truncate">{sub.email}</div>
+                        <div className="text-[9px] font-bold text-rich-charcoal/40 truncate">
+                          {sub.email}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
                 {submissions.length > 0 && (
-                  <button onClick={handleDownloadExcel} className="w-full mt-6 py-3 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] font-black text-xs uppercase flex items-center justify-center gap-2">
+                  <button
+                    onClick={handleDownloadExcel}
+                    className="w-full mt-6 py-3 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF] font-black text-xs uppercase flex items-center justify-center gap-2"
+                  >
                     <Download weight="bold" /> Download Excel
                   </button>
                 )}
@@ -1005,59 +1463,106 @@ export default function AdminPage() {
             >
               {/* Fixed Header */}
               <div className="p-6 md:p-8 pb-4 border-b-2 border-dashed border-rich-charcoal/10 shrink-0">
-                <h3 className="text-2xl font-serif font-black text-rich-charcoal mb-2">Archive Current Read</h3>
-                <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">Review and edit details before archiving</p>
+                <h3 className="text-2xl font-serif font-black text-rich-charcoal mb-2">
+                  Archive Current Read
+                </h3>
+                <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">
+                  Review and edit details before archiving
+                </p>
               </div>
 
               {/* Scrollable Form Body */}
               <div className="flex-1 overflow-y-auto p-6 md:p-8 pt-4 pb-4 custom-scrollbar">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Title</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                      Title
+                    </label>
                     <input
                       value={archiveForm.title}
-                      onChange={e => setArchiveForm({ ...archiveForm, title: e.target.value })}
+                      onChange={(e) =>
+                        setArchiveForm({
+                          ...archiveForm,
+                          title: e.target.value,
+                        })
+                      }
                       className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Author</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                      Author
+                    </label>
                     <input
                       value={archiveForm.author}
-                      onChange={e => setArchiveForm({ ...archiveForm, author: e.target.value })}
+                      onChange={(e) =>
+                        setArchiveForm({
+                          ...archiveForm,
+                          author: e.target.value,
+                        })
+                      }
                       className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Cover URL</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                      Cover URL
+                    </label>
                     <input
                       value={archiveForm.cover}
-                      onChange={e => setArchiveForm({ ...archiveForm, cover: e.target.value })}
+                      onChange={(e) =>
+                        setArchiveForm({
+                          ...archiveForm,
+                          cover: e.target.value,
+                        })
+                      }
                       className="p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Month (Date Read)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                      Month (Date Read)
+                    </label>
                     <input
                       value={archiveForm.dateRead}
-                      onChange={e => setArchiveForm({ ...archiveForm, dateRead: e.target.value })}
+                      onChange={(e) =>
+                        setArchiveForm({
+                          ...archiveForm,
+                          dateRead: e.target.value,
+                        })
+                      }
                       className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Rating</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                      Rating
+                    </label>
                     <input
-                      type="number" step="0.1"
+                      type="number"
+                      step="0.1"
                       value={archiveForm.rating}
-                      onChange={e => setArchiveForm({ ...archiveForm, rating: parseFloat(e.target.value) })}
+                      onChange={(e) =>
+                        setArchiveForm({
+                          ...archiveForm,
+                          rating: parseFloat(e.target.value),
+                        })
+                      }
                       className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
                     />
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">Summary</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                      Summary
+                    </label>
                     <textarea
                       value={archiveForm.summary}
-                      onChange={e => setArchiveForm({ ...archiveForm, summary: e.target.value })}
+                      onChange={(e) =>
+                        setArchiveForm({
+                          ...archiveForm,
+                          summary: e.target.value,
+                        })
+                      }
                       className="p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none"
                     />
                   </div>
@@ -1069,7 +1574,10 @@ export default function AdminPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => { setIsArchiveModalOpen(false); setArchiveForm(null); }}
+                    onClick={() => {
+                      setIsArchiveModalOpen(false);
+                      setArchiveForm(null);
+                    }}
                     className="py-3 bg-white text-rich-charcoal font-black rounded-xl border-2 border-rich-charcoal hover:bg-parchment transition-all"
                   >
                     Cancel
@@ -1080,7 +1588,11 @@ export default function AdminPage() {
                     disabled={loadingAction === "archiving"}
                     className="py-3 bg-forest-green text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] hover:shadow-none hover:translate-y-[4px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                   >
-                    {loadingAction === "archiving" ? <CircleNotch className="animate-spin" size={20} /> : "Archive"}
+                    {loadingAction === "archiving" ? (
+                      <CircleNotch className="animate-spin" size={20} />
+                    ) : (
+                      "Archive"
+                    )}
                   </button>
                 </div>
               </div>
@@ -1099,9 +1611,15 @@ export default function AdminPage() {
               <div className="w-16 h-16 bg-watermelon-pink/10 text-watermelon-pink rounded-2xl border-2 border-watermelon-pink flex items-center justify-center mx-auto mb-6">
                 <Trash size={32} weight="fill" />
               </div>
-              <h3 className="text-xl font-serif font-black text-rich-charcoal mb-2">Confirm Deletion</h3>
+              <h3 className="text-xl font-serif font-black text-rich-charcoal mb-2">
+                Confirm Deletion
+              </h3>
               <p className="text-sm font-medium text-rich-charcoal/60 mb-8 leading-relaxed">
-                Are you sure you want to remove <span className="font-bold text-rich-charcoal">{deleteConfirmData.email}</span> from the join requests?
+                Are you sure you want to remove{" "}
+                <span className="font-bold text-rich-charcoal">
+                  {deleteConfirmData.email}
+                </span>{" "}
+                from the join requests?
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <button
@@ -1111,11 +1629,20 @@ export default function AdminPage() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => handleDeleteRequest(deleteConfirmData.id, deleteConfirmData.email)}
+                  onClick={() =>
+                    handleDeleteRequest(
+                      deleteConfirmData.id,
+                      deleteConfirmData.email,
+                    )
+                  }
                   disabled={!!loadingAction}
                   className="py-3 bg-watermelon-pink text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] hover:shadow-none hover:translate-y-[4px] transition-all disabled:opacity-50"
                 >
-                  {loadingAction?.startsWith('delete-') ? <CircleNotch className="animate-spin mx-auto" size={20} /> : "Delete"}
+                  {loadingAction?.startsWith("delete-") ? (
+                    <CircleNotch className="animate-spin mx-auto" size={20} />
+                  ) : (
+                    "Delete"
+                  )}
                 </button>
               </div>
             </motion.div>
@@ -1149,7 +1676,7 @@ function ReorderableBookItem({
   onUpdatePastBook,
   onDeletePastBook,
   setEditBookForm,
-  onDragEnd
+  onDragEnd,
 }: ReorderableBookItemProps) {
   const controls = useDragControls();
   const isEditing = editingBookId === book.id;
@@ -1169,37 +1696,53 @@ function ReorderableBookItem({
             <input
               placeholder="Title"
               value={editBookForm.title}
-              onChange={e => setEditBookForm({ ...editBookForm, title: e.target.value })}
+              onChange={(e) =>
+                setEditBookForm({ ...editBookForm, title: e.target.value })
+              }
               className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
             <input
               placeholder="Author"
               value={editBookForm.author}
-              onChange={e => setEditBookForm({ ...editBookForm, author: e.target.value })}
+              onChange={(e) =>
+                setEditBookForm({ ...editBookForm, author: e.target.value })
+              }
               className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
             <input
               placeholder="Cover URL"
               value={editBookForm.cover}
-              onChange={e => setEditBookForm({ ...editBookForm, cover: e.target.value })}
+              onChange={(e) =>
+                setEditBookForm({ ...editBookForm, cover: e.target.value })
+              }
               className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs"
             />
             <input
               placeholder="Month"
               value={editBookForm.dateRead}
-              onChange={e => setEditBookForm({ ...editBookForm, dateRead: e.target.value })}
+              onChange={(e) =>
+                setEditBookForm({ ...editBookForm, dateRead: e.target.value })
+              }
               className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
             <input
-              type="number" step="0.1"
+              type="number"
+              step="0.1"
               value={editBookForm.rating}
-              onChange={e => setEditBookForm({ ...editBookForm, rating: parseFloat(e.target.value) })}
+              onChange={(e) =>
+                setEditBookForm({
+                  ...editBookForm,
+                  rating: parseFloat(e.target.value),
+                })
+              }
               className="p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
             />
             <textarea
               placeholder="Summary"
               value={editBookForm.summary}
-              onChange={e => setEditBookForm({ ...editBookForm, summary: e.target.value })}
+              onChange={(e) =>
+                setEditBookForm({ ...editBookForm, summary: e.target.value })
+              }
               className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none"
             />
           </div>
@@ -1209,7 +1752,12 @@ function ReorderableBookItem({
               disabled={loadingAction === `update-past-${book.id}`}
               className="flex-1 bg-forest-green text-white font-black p-3 rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] text-xs uppercase flex items-center justify-center gap-2"
             >
-              {loadingAction === `update-past-${book.id}` ? <CircleNotch className="animate-spin" /> : <FloppyDisk weight="bold" />} Save Changes
+              {loadingAction === `update-past-${book.id}` ? (
+                <CircleNotch className="animate-spin" />
+              ) : (
+                <FloppyDisk weight="bold" />
+              )}{" "}
+              Save Changes
             </button>
             <button
               type="button"
@@ -1234,13 +1782,21 @@ function ReorderableBookItem({
 
           <div className="flex-1 min-w-0 flex flex-col sm:flex-row gap-4 md:gap-6 items-start">
             <div className="w-20 sm:w-16 h-28 sm:h-24 shrink-0 bg-white rounded-lg border-2 border-rich-charcoal overflow-hidden shadow-[2px_2px_0px_#1A1A1A] self-center sm:self-start">
-              <img src={book.cover} alt="" className="w-full h-full object-cover" />
+              <img
+                src={book.cover}
+                alt=""
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex-1 min-w-0 w-full">
               <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
                 <div className="min-w-0">
-                  <h3 className="font-serif font-black text-lg text-rich-charcoal truncate">{book.title}</h3>
-                  <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">{book.author}</p>
+                  <h3 className="font-serif font-black text-lg text-rich-charcoal truncate">
+                    {book.title}
+                  </h3>
+                  <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">
+                    {book.author}
+                  </p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <button
@@ -1254,7 +1810,11 @@ function ReorderableBookItem({
                     disabled={loadingAction === `delete-past-${book.id}`}
                     className="flex-1 sm:flex-none p-2 bg-watermelon-pink text-white rounded-lg border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center"
                   >
-                    {loadingAction === `delete-past-${book.id}` ? <CircleNotch className="animate-spin" size={18} /> : <Trash size={18} weight="bold" />}
+                    {loadingAction === `delete-past-${book.id}` ? (
+                      <CircleNotch className="animate-spin" size={18} />
+                    ) : (
+                      <Trash size={18} weight="bold" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -1263,7 +1823,10 @@ function ReorderableBookItem({
                   <Calendar size={12} weight="bold" /> {book.dateRead}
                 </span>
                 <span className="text-[9px] md:text-[10px] font-black text-watermelon-pink uppercase bg-watermelon-pink/10 px-2 py-0.5 rounded-full border border-watermelon-pink/20">
-                  ★ {book.rating !== undefined && !isNaN(book.rating) ? book.rating : "N/A"}
+                  ★{" "}
+                  {book.rating !== undefined && !isNaN(book.rating)
+                    ? book.rating
+                    : "N/A"}
                 </span>
               </div>
               <p className="mt-3 text-xs text-rich-charcoal/60 line-clamp-2 md:line-clamp-3 italic font-medium leading-relaxed">

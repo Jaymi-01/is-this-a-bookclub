@@ -18,18 +18,22 @@ export function CommunityVibe() {
   return (
     <section className="relative h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Background Image with Parallax-like effect */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${communityImage})`,
           backgroundPosition: "center",
           backgroundSize: "cover",
-          backgroundAttachment: "fixed"
+          backgroundAttachment: "fixed",
         }}
       >
         <div className="absolute inset-0 bg-rich-charcoal/40 backdrop-blur-[2px]" />
         {/* SEO Alt Text for Background Image */}
-        <img src={communityImage} alt="Members of Is This A Bookclub enjoying a reading session together" className="sr-only" />
+        <img
+          src={communityImage}
+          alt="Members of Is This A Bookclub enjoying a reading session together"
+          className="sr-only"
+        />
       </div>
 
       {/* Content Container */}
@@ -54,7 +58,7 @@ export function CommunityVibe() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   style={{
-                    position: 'absolute',
+                    position: "absolute",
                     top,
                     left,
                     transform: rotate,
@@ -72,8 +76,10 @@ export function CommunityVibe() {
           {/* Main Text */}
           <div className="relative z-10">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-rich-charcoal leading-tight tracking-tighter">
-              Join the Ultimate <br/>
-              <span className="text-forest-green italic underline decoration-watermelon-pink decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">Nigerian Book Community.</span>
+              Join the Ultimate <br />
+              <span className="text-forest-green italic underline decoration-watermelon-pink decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8">
+                Nigerian Book Community.
+              </span>
             </h2>
             <p className="mt-6 text-rich-charcoal/60 font-bold uppercase tracking-[0.2em] text-xs md:text-sm">
               Captured moments from the ITABC tribe

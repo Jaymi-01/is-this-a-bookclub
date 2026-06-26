@@ -20,7 +20,16 @@ interface SnowEffectProps {
   activeTheme: string;
 }
 
-const CONFETTI_COLORS = ["#D42F2F", "#1E5128", "#D4AF37", "#FF4081", "#8C52FF", "#2A734D", "#EBD48F", "#FDFBF7"];
+const CONFETTI_COLORS = [
+  "#D42F2F",
+  "#1E5128",
+  "#D4AF37",
+  "#FF4081",
+  "#8C52FF",
+  "#2A734D",
+  "#EBD48F",
+  "#FDFBF7",
+];
 
 export function SnowEffect({ activeTheme }: SnowEffectProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -49,26 +58,29 @@ export function SnowEffect({ activeTheme }: SnowEffectProps) {
     const particles: Particle[] = [];
 
     const createParticle = (initY = false): Particle => {
-      const radius = activeTheme === "christmas" 
-        ? Math.random() * 3.5 + 1.2 
-        : activeTheme === "eid" 
-        ? Math.random() * 4 + 2 
-        : activeTheme === "valentine"
-        ? Math.random() * 5 + 4
-        : Math.random() * 4 + 3; // newyear confetti size
+      const radius =
+        activeTheme === "christmas"
+          ? Math.random() * 3.5 + 1.2
+          : activeTheme === "eid"
+            ? Math.random() * 4 + 2
+            : activeTheme === "valentine"
+              ? Math.random() * 5 + 4
+              : Math.random() * 4 + 3; // newyear confetti size
 
       return {
         x: Math.random() * width,
         y: initY ? Math.random() * height : -15,
         r: radius,
-        d: activeTheme === "valentine" 
-          ? Math.random() * 0.6 + 0.3 // slow drift for hearts
-          : activeTheme === "newyear"
-          ? Math.random() * 1.5 + 1.0 // faster fall for confetti
-          : Math.random() * 0.9 + 0.4, // standard drift
+        d:
+          activeTheme === "valentine"
+            ? Math.random() * 0.6 + 0.3 // slow drift for hearts
+            : activeTheme === "newyear"
+              ? Math.random() * 1.5 + 1.0 // faster fall for confetti
+              : Math.random() * 0.9 + 0.4, // standard drift
         swing: Math.random() * 0.02 + 0.005,
         swingStep: Math.random() * 100,
-        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        color:
+          CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
         w: Math.random() * 8 + 6,
         h: Math.random() * 4 + 3,
         rotation: Math.random() * Math.PI * 2,
@@ -80,7 +92,12 @@ export function SnowEffect({ activeTheme }: SnowEffectProps) {
       particles.push(createParticle(true));
     }
 
-    const drawHeart = (c: CanvasRenderingContext2D, x: number, y: number, r: number) => {
+    const drawHeart = (
+      c: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      r: number,
+    ) => {
       c.moveTo(x, y + r / 4);
       c.bezierCurveTo(x, y - r / 2, x - r, y - r / 2, x - r, y + r / 4);
       c.bezierCurveTo(x - r, y + r, x, y + r * 1.3, x, y + r * 1.6);
@@ -88,7 +105,12 @@ export function SnowEffect({ activeTheme }: SnowEffectProps) {
       c.bezierCurveTo(x + r, y - r / 2, x, y - r / 2, x, y + r / 4);
     };
 
-    const drawStar = (c: CanvasRenderingContext2D, x: number, y: number, r: number) => {
+    const drawStar = (
+      c: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      r: number,
+    ) => {
       // 4-point star
       c.moveTo(x, y - r);
       c.lineTo(x + r / 3, y - r / 3);

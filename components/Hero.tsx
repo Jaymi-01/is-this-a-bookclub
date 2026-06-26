@@ -23,16 +23,25 @@ export function Hero() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-rich-charcoal text-parchment rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#8C52FF]">
             <BookBookmark weight="fill" className="text-vibrant-lilac" />
-            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">The Monthly Spotlight</span>
+            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
+              The Monthly Spotlight
+            </span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black text-rich-charcoal leading-[1.1] tracking-tighter">
             Premium Nigerian <br className="hidden lg:block" />
-            <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic"> Literature Club</span>.
+            <span className="text-forest-green underline decoration-watermelon-pink decoration-6 md:decoration-8 underline-offset-8 italic">
+              {" "}
+              Literature Club
+            </span>
+            .
           </h1>
 
           <p className="text-lg md:text-xl lg:text-2xl font-sans text-rich-charcoal/80 max-w-xl mx-auto md:mx-0 leading-relaxed font-medium">
-            Join Nigeria&apos;s most curated <strong>book community</strong>. We celebrate African writers and modern classics through thoughtful monthly discussions. Currently reading: <strong>{currentBook.title}</strong> by {currentBook.author}.
+            Join Nigeria&apos;s most curated <strong>book community</strong>. We
+            celebrate African writers and modern classics through thoughtful
+            monthly discussions. Currently reading:{" "}
+            <strong>{currentBook.title}</strong> by {currentBook.author}.
           </p>
         </motion.div>
 
@@ -50,8 +59,12 @@ export function Hero() {
               className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-parchment p-5 md:p-6 border-t-4 border-rich-charcoal">
-              <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-rich-charcoal mb-1">Current Pick</h3>
-              <p className="text-xs md:text-sm font-bold text-rich-charcoal/60 truncate">{currentBook.title}</p>
+              <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-rich-charcoal mb-1">
+                Current Pick
+              </h3>
+              <p className="text-xs md:text-sm font-bold text-rich-charcoal/60 truncate">
+                {currentBook.title}
+              </p>
             </div>
           </div>
 
@@ -62,8 +75,11 @@ export function Hero() {
             className="absolute -top-2 -right-2 md:-top-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-watermelon-pink rounded-full border-4 border-rich-charcoal flex items-center justify-center text-center p-1 md:p-2 shadow-xl z-20"
           >
             <span className="font-serif font-black text-rich-charcoal text-[8px] md:text-[11px] leading-tight uppercase">
-              {badgeText.split(' ').map((word, i) => (
-                <span key={i}>{word}<br /></span>
+              {badgeText.split(" ").map((word, i) => (
+                <span key={i}>
+                  {word}
+                  <br />
+                </span>
               ))}
             </span>
           </motion.div>
@@ -77,8 +93,12 @@ export function Hero() {
         viewport={{ once: true }}
         className="w-full max-w-4xl bg-parchment p-8 md:p-16 rounded-[2.5rem] border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A] text-center z-10"
       >
-        <h2 className="text-3xl md:text-4xl font-serif font-black text-rich-charcoal mb-2 uppercase tracking-tighter">Next Meeting</h2>
-        <p className="text-xs md:text-lg font-black text-rich-charcoal/30 uppercase tracking-[0.3em] mb-10">Countdown to the Discussion</p>
+        <h2 className="text-3xl md:text-4xl font-serif font-black text-rich-charcoal mb-2 uppercase tracking-tighter">
+          Next Meeting
+        </h2>
+        <p className="text-xs md:text-lg font-black text-rich-charcoal/30 uppercase tracking-[0.3em] mb-10">
+          Countdown to the Discussion
+        </p>
         <Countdown />
       </motion.div>
     </section>

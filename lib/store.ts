@@ -24,7 +24,7 @@ interface BookStore {
   loading: boolean;
   activeTheme: string;
   festiveGreeting: string;
-  
+
   // Actions
   init: () => void;
   setCurrentBook: (book: Book) => Promise<void>;
@@ -61,76 +61,129 @@ export const useBookStore = create<BookStore>((set) => ({
   loading: true,
 
   init: () => {
-    onSnapshot(doc(db, "siteContent", "main"), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        set({
-          currentBook: data.currentBook || DEFAULT_CURRENT,
-          pastBooks: data.pastBooks || [],
-          meetingDate: data.meetingDate || "",
-          badgeText: data.badgeText || "NEXT PICK!",
-          booksFinished: data.booksFinished ?? 0,
-          activeMembers: data.activeMembers ?? 0,
-          communityImage: data.communityImage || "https://placehold.co/1200x800?text=ITABC+Community+Photo",
-          signatures: data.signatures || [],
-          activeTheme: data.activeTheme || (data.festiveMode ? "christmas" : "default"),
-          festiveGreeting: data.festiveGreeting || "Merry Christmas & Happy New Year from ITABC! 🎄✨",
-          loading: false,
-        });
-      } else {
+    onSnapshot(
+      doc(db, "siteContent", "main"),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          set({
+            currentBook: data.currentBook || DEFAULT_CURRENT,
+            pastBooks: data.pastBooks || [],
+            meetingDate: data.meetingDate || "",
+            badgeText: data.badgeText || "NEXT PICK!",
+            booksFinished: data.booksFinished ?? 0,
+            activeMembers: data.activeMembers ?? 0,
+            communityImage:
+              data.communityImage ||
+              "https://placehold.co/1200x800?text=ITABC+Community+Photo",
+            signatures: data.signatures || [],
+            activeTheme:
+              data.activeTheme || (data.festiveMode ? "christmas" : "default"),
+            festiveGreeting:
+              data.festiveGreeting ||
+              "Merry Christmas & Happy New Year from ITABC! 🎄✨",
+            loading: false,
+          });
+        } else {
+          set({ loading: false });
+        }
+      },
+      (error) => {
+        console.error("Firestore Read Error:", error);
         set({ loading: false });
-      }
-    }, (error) => {
-      console.error("Firestore Read Error:", error);
-      set({ loading: false });
-    });
+      },
+    );
   },
 
   setCurrentBook: async (book) => {
-    await setDoc(doc(db, "siteContent", "main"), { currentBook: book }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { currentBook: book },
+      { merge: true },
+    );
   },
 
   addPastBook: async (book) => {
-    await setDoc(doc(db, "siteContent", "main"), {
-      pastBooks: arrayUnion(book)
-    }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      {
+        pastBooks: arrayUnion(book),
+      },
+      { merge: true },
+    );
   },
 
   setPastBooks: async (books: Book[]) => {
-    await setDoc(doc(db, "siteContent", "main"), {
-      pastBooks: books
-    }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      {
+        pastBooks: books,
+      },
+      { merge: true },
+    );
   },
 
   setMeetingDate: async (date) => {
-    await setDoc(doc(db, "siteContent", "main"), { meetingDate: date }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { meetingDate: date },
+      { merge: true },
+    );
   },
 
   setBadgeText: async (text) => {
-    await setDoc(doc(db, "siteContent", "main"), { badgeText: text }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { badgeText: text },
+      { merge: true },
+    );
   },
 
   setBooksFinished: async (count) => {
-    await setDoc(doc(db, "siteContent", "main"), { booksFinished: count }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { booksFinished: count },
+      { merge: true },
+    );
   },
 
   setActiveMembers: async (count) => {
-    await setDoc(doc(db, "siteContent", "main"), { activeMembers: count }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { activeMembers: count },
+      { merge: true },
+    );
   },
 
   setCommunityImage: async (url) => {
-    await setDoc(doc(db, "siteContent", "main"), { communityImage: url }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { communityImage: url },
+      { merge: true },
+    );
   },
 
   setSignatures: async (names) => {
-    await setDoc(doc(db, "siteContent", "main"), { signatures: names }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { signatures: names },
+      { merge: true },
+    );
   },
 
   setActiveTheme: async (theme) => {
-    await setDoc(doc(db, "siteContent", "main"), { activeTheme: theme }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { activeTheme: theme },
+      { merge: true },
+    );
   },
 
   setFestiveGreeting: async (text) => {
-    await setDoc(doc(db, "siteContent", "main"), { festiveGreeting: text }, { merge: true });
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { festiveGreeting: text },
+      { merge: true },
+    );
   },
 }));

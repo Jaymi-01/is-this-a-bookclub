@@ -25,9 +25,16 @@ export const metadata: Metadata = {
     default: "Is This A Bookclub? | Premium Nigerian Book Club",
     template: "%s | Is This A Bookclub?",
   },
-  description: "Experience premium Nigerian literature with 'Is This A Bookclub?'. Join a curated community of readers, explore modern classics, and engage in thoughtful discussions.",
+  description:
+    "Experience premium Nigerian literature with 'Is This A Bookclub?'. Join a curated community of readers, explore modern classics, and engage in thoughtful discussions.",
   metadataBase: new URL("https://isthisabookclub.com"),
-  keywords: ["Nigerian literature", "book club Nigeria", "premium reading experience", "African writers", "book community"],
+  keywords: [
+    "Nigerian literature",
+    "book club Nigeria",
+    "premium reading experience",
+    "African writers",
+    "book community",
+  ],
   authors: [{ name: "Is This A Bookclub?" }],
   creator: "Is This A Bookclub?",
   publisher: "Is This A Bookclub?",
@@ -81,11 +88,9 @@ export default function RootLayout({
       <body
         className={`${libreBaskerville.variable} ${montserrat.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <BookStoreProvider>
-          {children}
-        </BookStoreProvider>
+        <BookStoreProvider>{children}</BookStoreProvider>
         <Toaster position="bottom-right" richColors />
-        
+
         {/* Organization Schema for Google */}
         <script
           type="application/ld+json"
@@ -93,12 +98,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "url": "https://isthisabookclub.com",
-              "logo": "https://isthisabookclub.com/logo.png",
-              "name": "Is This A Bookclub?",
-              "sameAs": [
-                "https://www.instagram.com/isthisabookclubhq"
-              ]
+              url: "https://isthisabookclub.com",
+              logo: "https://isthisabookclub.com/logo.png",
+              name: "Is This A Bookclub?",
+              sameAs: ["https://www.instagram.com/isthisabookclubhq"],
             }),
           }}
         />
