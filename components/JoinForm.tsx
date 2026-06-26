@@ -27,6 +27,8 @@ export function JoinForm() {
     const newErrors: Record<string, string> = {};
     if (formData.name.trim().length < 2) {
       newErrors.name = "Please enter your full name (at least 2 characters).";
+    } else if (formData.name.length > 50) {
+      newErrors.name = "Keep it sweet! Please keep your full name under 50 characters.";
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -130,7 +132,15 @@ export function JoinForm() {
               id="name"
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, name: val });
+                if (val.length > 50) {
+                  setErrors((prev) => ({ ...prev, name: "Keep it sweet! Please keep your full name under 50 characters." }));
+                } else if (errors.name === "Keep it sweet! Please keep your full name under 50 characters." || (val.trim().length >= 2 && errors.name)) {
+                  setErrors((prev) => ({ ...prev, name: "" }));
+                }
+              }}
               className={`w-full p-4 bg-white border-4 ${errors.name ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="Jane Doe"
             />
