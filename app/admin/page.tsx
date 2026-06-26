@@ -680,7 +680,7 @@ export default function AdminPage() {
                     {pastBookErrors.rating && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.rating}</span>}
                   </div>
                   <div className="md:col-span-2 flex flex-col gap-1">
-                    <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => { setPastBookForm({...pastBookForm, summary: e.target.value}); if (pastBookErrors.summary) setPastBookErrors({...pastBookErrors, summary: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32" />
+                    <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => { setPastBookForm({...pastBookForm, summary: e.target.value}); if (pastBookErrors.summary) setPastBookErrors({...pastBookErrors, summary: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32 resize-none" />
                     {pastBookErrors.summary && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.summary}</span>}
                   </div>
                   <button type="submit" disabled={!!loadingAction} className="md:col-span-2 bg-forest-green text-white font-black p-4 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] uppercase disabled:opacity-50">
@@ -812,7 +812,7 @@ export default function AdminPage() {
                   <textarea 
                     value={signatureText} 
                     onChange={e => setSignatureText(e.target.value)} 
-                    className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm h-32 focus:ring-4 focus:ring-watermelon-pink outline-none" 
+                    className="w-full p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold text-sm h-32 focus:ring-4 focus:ring-watermelon-pink outline-none resize-none" 
                     placeholder="Tunde, Amaka, Chidi, Joel..." 
                   />
                   <button 
@@ -977,7 +977,7 @@ export default function AdminPage() {
                     <textarea 
                       value={archiveForm.summary} 
                       onChange={e => setArchiveForm({...archiveForm, summary: e.target.value})} 
-                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm" 
+                      className="p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none" 
                     />
                   </div>
                 </div>
@@ -1119,7 +1119,7 @@ function ReorderableBookItem({
               placeholder="Summary" 
               value={editBookForm.summary} 
               onChange={e => setEditBookForm({...editBookForm, summary: e.target.value})} 
-              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm" 
+              className="md:col-span-2 p-3 border-2 border-rich-charcoal rounded-xl bg-white h-24 text-sm resize-none" 
             />
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
