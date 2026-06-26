@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { User, Envelope, BookOpen, PaperPlaneRight, WhatsappLogo, CircleNotch } from "@phosphor-icons/react";
-import { toast } from "react-hot-toast";
+
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
@@ -18,6 +18,10 @@ export function JoinForm() {
   const [honeypot, setHoneypot] = useState("");
   const [lastSubmitted, setLastSubmitted] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -45,6 +49,7 @@ export function JoinForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitStatus({ type: null, message: "" });
     
     // 1. Honeypot check: Bots will fill this out, humans won't.
     if (honeypot) {
@@ -54,14 +59,14 @@ export function JoinForm() {
 
     // 2. Custom Validation
     if (!validate()) {
-      toast.error("Please fix the errors in the form.");
+      setSubmitStatus({ type: "error", message: "Please fix the errors in the form." });
       return;
     }
 
     // 3. Simple Rate Limit: Wait 30 seconds between submissions from the same session.
     const now = Date.now();
     if (now - lastSubmitted < 30000) {
-      toast.error("Please wait a moment before sending another request.");
+      setSubmitStatus({ type: "error", message: "Please wait a moment before sending another request." });
       return;
     }
 
@@ -73,20 +78,12 @@ export function JoinForm() {
         createdAt: serverTimestamp(),
       });
 
-      toast.success("Welcome to the club! We'll be in touch soon.", {
-        icon: "📚",
-        style: {
-          borderRadius: "10px",
-          background: "#1A1A1A",
-          color: "#FDFBF7",
-          border: "2px solid #EBD48F",
-        },
-      });
+      setSubmitStatus({ type: "success", message: "Welcome to the club! We'll be in touch soon. 📚" });
       setFormData({ name: "", email: "", whatsapp: "", favoriteGenre: "" });
       setLastSubmitted(now);
     } catch (error) {
       console.error("Error adding document: ", error);
-      toast.error("Something went wrong. Please try again.");
+      setSubmitStatus({ type: "error", message: "Something went wrong. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +101,7 @@ export function JoinForm() {
           <div className="inline-flex items-center gap-2 px-4 py-1 bg-forest-green text-parchment font-black text-[10px] uppercase rounded-lg mb-4">
             New Members
           </div>
-          <h2 className="text-5xl md:text-7xl font-serif font-black text-rich-charcoal tracking-tighter">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-black text-rich-charcoal tracking-tighter">
             Join The <br className="md:hidden" /> Club.
           </h2>
           <p className="text-rich-charcoal/50 mt-4 text-lg md:text-xl font-medium max-w-md mx-auto">
@@ -115,7 +112,7 @@ export function JoinForm() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Honeypot field (hidden from humans) */}
           <div className="hidden">
-            <label htmlFor="website">Don't fill this out if you're human</label>
+            <label htmlFor="website">Don&apos;t fill this out if you&apos;re human</label>
             <input 
               id="website"
               type="text" 
@@ -209,6 +206,16 @@ export function JoinForm() {
               </span>
             )}
           </motion.button>
+
+          {submitStatus.type && (
+            <p className={`md:col-span-2 text-center font-black text-lg mt-2 ${
+              submitStatus.type === "success" 
+                ? "text-forest-green" 
+                : "text-watermelon-pink"
+            }`}>
+              {submitStatus.message}
+            </p>
+          )}
         </form>
       </motion.div>
     </section>
