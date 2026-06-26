@@ -155,3 +155,24 @@
     scrollbar-color: #1A1A1A transparent;
   }
 }
+
+.theme-festive {
+  --color-warm-sand: #E8F1ED !important;
+  --color-vibrant-lilac: #D42F2F !important; /* Christmas Crimson Red */
+  --color-watermelon-pink: #1E5128 !important; /* Christmas Pine Green */
+  --color-forest-green: #1E5128 !important;
+  
+  --background: #E8F1ED !important;
+  --primary: #1E5128 !important;
+  --secondary: #D42F2F !important;
+  --accent: #D42F2F !important;
+  --destructive: #D42F2F !important;
+  --ring: #1E5128 !important;
+}
+
+.theme-festive ::-webkit-scrollbar-thumb:hover {
+  background: #D42F2F !important;
+}
+.theme-festive .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #D42F2F !important;
+}
