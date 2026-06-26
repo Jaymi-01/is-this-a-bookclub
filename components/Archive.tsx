@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards, Navigation } from "swiper/modules";
 import { useBookStore } from "@/lib/store";
 import { Star, Quotes, CalendarBlank } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 import "swiper/css";
 import "swiper/css/effect-cards";
@@ -27,12 +27,12 @@ export function Archive() {
           <div className="inline-flex items-center gap-2 px-5 py-2 bg-watermelon-pink text-rich-charcoal font-black text-[10px] md:text-xs uppercase rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A]">
             Collection
           </div>
-          <h2 className="text-5xl md:text-6xl lg:text-8xl font-serif font-black text-parchment leading-[1] tracking-tighter">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-black text-parchment leading-[1] tracking-tighter">
             The Interactive <br className="hidden md:block" />
             <span className="text-vibrant-lilac italic">Archive.</span>
           </h2>
           <p className="text-parchment/50 text-lg md:text-xl leading-relaxed max-w-md font-sans font-medium">
-            Every story we've conquered, every debate we've had. Swipe through the history of our shared experience.
+            Every story we&apos;ve conquered, every debate we&apos;ve had. Swipe through the history of our shared experience.
           </p>
           
           <div className="flex flex-wrap gap-4 pt-4 justify-center md:justify-start">
@@ -66,7 +66,9 @@ export function Archive() {
                     />
                     <div className="absolute top-6 right-6 bg-watermelon-pink text-rich-charcoal w-14 h-14 rounded-full border-4 border-rich-charcoal flex flex-col items-center justify-center font-black shadow-lg">
                       <Star weight="fill" size={16} />
-                      <span className="text-sm">{book.rating}</span>
+                      <span className="text-sm">
+                        {book.rating !== undefined && !isNaN(book.rating) ? book.rating : "N/A"}
+                      </span>
                     </div>
                   </div>
                   
