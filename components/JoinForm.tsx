@@ -33,7 +33,7 @@ export function JoinForm() {
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address.";
+      newErrors.email = "Whoops! That doesn't look like a valid email address.";
     }
 
     const phoneRegex = /^\+?[0-9]{10,15}$/;
@@ -111,7 +111,7 @@ export function JoinForm() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Honeypot field (hidden from humans) */}
           <div className="hidden">
             <label htmlFor="website">Don&apos;t fill this out if you&apos;re human</label>
@@ -155,7 +155,21 @@ export function JoinForm() {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, email: val });
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (errors.email && emailRegex.test(val)) {
+                  setErrors((prev) => ({ ...prev, email: "" }));
+                }
+              }}
+              onBlur={(e) => {
+                const val = e.target.value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (val.trim() && !emailRegex.test(val)) {
+                  setErrors((prev) => ({ ...prev, email: "Whoops! That doesn't look like a valid email address." }));
+                }
+              }}
               className={`w-full p-4 bg-white border-4 ${errors.email ? 'border-watermelon-pink' : 'border-rich-charcoal'} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="jane@itabc.club"
             />
