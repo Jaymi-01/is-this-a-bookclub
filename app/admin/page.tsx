@@ -75,6 +75,38 @@ export default function AdminPage() {
   const [pastBookForm, setPastBookForm] = useState({
     title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026"
   });
+  const [pastBookErrors, setPastBookErrors] = useState<Record<string, string>>({});
+
+  const validatePastBook = () => {
+    const errors: Record<string, string> = {};
+    if (!pastBookForm.title.trim()) {
+      errors.title = "Title is required";
+    }
+    if (!pastBookForm.author.trim()) {
+      errors.author = "Author is required";
+    }
+    if (!pastBookForm.cover.trim()) {
+      errors.cover = "Cover URL is required";
+    } else if (!/^https?:\/\/.+/i.test(pastBookForm.cover.trim())) {
+      errors.cover = "Must be a valid URL starting with http:// or https://";
+    }
+    if (!pastBookForm.dateRead.trim()) {
+      errors.dateRead = "Month is required";
+    }
+    if (pastBookForm.rating === undefined || isNaN(pastBookForm.rating)) {
+      errors.rating = "Rating is required";
+    } else if (pastBookForm.rating < 0 || pastBookForm.rating > 5) {
+      errors.rating = "Rating must be between 0 and 5";
+    }
+    if (!pastBookForm.summary.trim()) {
+      errors.summary = "Summary is required";
+    } else if (pastBookForm.summary.trim().length < 10) {
+      errors.summary = "Summary must be at least 10 characters";
+    }
+    setPastBookErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const [editingBookId, setEditingBookId] = useState<string | null>(null);
   const [editBookForm, setEditBookForm] = useState<Book | null>(null);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
@@ -608,6 +640,10 @@ export default function AdminPage() {
                 </div>
                 <form onSubmit={async (e) => {
                   e.preventDefault();
+                  if (!validatePastBook()) {
+                    toast.error("Please fix the errors in the form.");
+                    return;
+                  }
                   setLoadingAction("manualArchive");
                   try {
                     const ratingVal = isNaN(pastBookForm.rating ?? 0) ? 0 : pastBookForm.rating;
@@ -615,6 +651,7 @@ export default function AdminPage() {
                     toast.success("Added!");
                     logActivity("MANUAL_ARCHIVE", `Manually added: ${pastBookForm.title}`);
                     setPastBookForm({ title: "", author: "", cover: "", summary: "", rating: 5, dateRead: "Feb 2026" });
+                    setPastBookErrors({});
                   } catch (error: unknown) {
                     const e = error as Error;
                     toast.error(`Error: ${e.message}`);
@@ -622,12 +659,30 @@ export default function AdminPage() {
                     setLoadingAction(null);
                   }
                 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <input placeholder="Title" value={pastBookForm.title} onChange={e => setPastBookForm({...pastBookForm, title: e.target.value})} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                  <input placeholder="Author" value={pastBookForm.author} onChange={e => setPastBookForm({...pastBookForm, author: e.target.value})} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                  <input placeholder="Cover URL" value={pastBookForm.cover} onChange={e => setPastBookForm({...pastBookForm, cover: e.target.value})} className="md:col-span-2 p-4 border-4 border-rich-charcoal rounded-xl bg-parchment" />
-                  <input placeholder="Month" value={pastBookForm.dateRead} onChange={e => setPastBookForm({...pastBookForm, dateRead: e.target.value})} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                  <input type="number" step="0.1" value={pastBookForm.rating} onChange={e => setPastBookForm({...pastBookForm, rating: parseFloat(e.target.value)})} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
-                  <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => setPastBookForm({...pastBookForm, summary: e.target.value})} className="md:col-span-2 p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32" />
+                  <div className="flex flex-col gap-1">
+                    <input placeholder="Title" value={pastBookForm.title} onChange={e => { setPastBookForm({...pastBookForm, title: e.target.value}); if (pastBookErrors.title) setPastBookErrors({...pastBookErrors, title: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    {pastBookErrors.title && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.title}</span>}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <input placeholder="Author" value={pastBookForm.author} onChange={e => { setPastBookForm({...pastBookForm, author: e.target.value}); if (pastBookErrors.author) setPastBookErrors({...pastBookErrors, author: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    {pastBookErrors.author && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.author}</span>}
+                  </div>
+                  <div className="md:col-span-2 flex flex-col gap-1">
+                    <input placeholder="Cover URL" value={pastBookForm.cover} onChange={e => { setPastBookForm({...pastBookForm, cover: e.target.value}); if (pastBookErrors.cover) setPastBookErrors({...pastBookErrors, cover: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment" />
+                    {pastBookErrors.cover && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.cover}</span>}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <input placeholder="Month" value={pastBookForm.dateRead} onChange={e => { setPastBookForm({...pastBookForm, dateRead: e.target.value}); if (pastBookErrors.dateRead) setPastBookErrors({...pastBookErrors, dateRead: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    {pastBookErrors.dateRead && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.dateRead}</span>}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <input type="number" step="0.1" value={pastBookForm.rating} onChange={e => { setPastBookForm({...pastBookForm, rating: parseFloat(e.target.value)}); if (pastBookErrors.rating) setPastBookErrors({...pastBookErrors, rating: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment font-bold" />
+                    {pastBookErrors.rating && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.rating}</span>}
+                  </div>
+                  <div className="md:col-span-2 flex flex-col gap-1">
+                    <textarea placeholder="Summary" value={pastBookForm.summary} onChange={e => { setPastBookForm({...pastBookForm, summary: e.target.value}); if (pastBookErrors.summary) setPastBookErrors({...pastBookErrors, summary: ""}); }} className="p-4 border-4 border-rich-charcoal rounded-xl bg-parchment h-32" />
+                    {pastBookErrors.summary && <span className="text-xs text-watermelon-pink font-bold pl-1">{pastBookErrors.summary}</span>}
+                  </div>
                   <button type="submit" disabled={!!loadingAction} className="md:col-span-2 bg-forest-green text-white font-black p-4 rounded-xl border-4 border-rich-charcoal shadow-[4px_4px_0px_#1A1A1A] uppercase disabled:opacity-50">
                     {loadingAction === "manualArchive" ? <CircleNotch className="animate-spin" size={24} /> : "Add Past Book"}
                   </button>
