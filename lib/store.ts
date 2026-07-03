@@ -14,6 +14,7 @@ export interface Book {
 
 interface BookStore {
   currentBook: Book;
+  currentBook2: Book;
   pastBooks: Book[];
   meetingDate: string;
   badgeText: string;
@@ -28,6 +29,7 @@ interface BookStore {
   // Actions
   init: () => void;
   setCurrentBook: (book: Book) => Promise<void>;
+  setCurrentBook2: (book: Book) => Promise<void>;
   addPastBook: (book: Book) => Promise<void>;
   setPastBooks: (books: Book[]) => Promise<void>;
   setMeetingDate: (date: string) => Promise<void>;
@@ -47,8 +49,16 @@ const DEFAULT_CURRENT: Book = {
   cover: "https://placehold.co/400x600?text=ITABC+Next+Pick",
 };
 
+const DEFAULT_CURRENT_2: Book = {
+  id: "current2",
+  title: "Second Pick TBD",
+  author: "TBD",
+  cover: "https://placehold.co/400x600?text=ITABC+Second+Pick",
+};
+
 export const useBookStore = create<BookStore>((set) => ({
   currentBook: DEFAULT_CURRENT,
+  currentBook2: DEFAULT_CURRENT_2,
   pastBooks: [],
   meetingDate: "",
   badgeText: "NEXT PICK!",
@@ -68,6 +78,7 @@ export const useBookStore = create<BookStore>((set) => ({
           const data = docSnap.data();
           set({
             currentBook: data.currentBook || DEFAULT_CURRENT,
+            currentBook2: data.currentBook2 || DEFAULT_CURRENT_2,
             pastBooks: data.pastBooks || [],
             meetingDate: data.meetingDate || "",
             badgeText: data.badgeText || "NEXT PICK!",
@@ -99,6 +110,14 @@ export const useBookStore = create<BookStore>((set) => ({
     await setDoc(
       doc(db, "siteContent", "main"),
       { currentBook: book },
+      { merge: true },
+    );
+  },
+
+  setCurrentBook2: async (book) => {
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { currentBook2: book },
       { merge: true },
     );
   },
