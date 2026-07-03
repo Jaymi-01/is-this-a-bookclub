@@ -59,7 +59,7 @@ export function Hero() {
           {/* First Book */}
           <div
             onClick={() => setFocusedBook(1)}
-            className={`absolute inset-0 w-full h-full group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-8 sm:hover:-translate-x-10 hover:-rotate-12 cursor-pointer ${
+            className={`absolute inset-0 w-full h-full group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-2 sm:hover:-translate-x-3 hover:rotate-0 cursor-pointer ${
               focusedBook === 1 ? "z-20" : "z-10"
             }`}
           >
@@ -84,7 +84,7 @@ export function Hero() {
           {/* Second Book */}
           <div
             onClick={() => setFocusedBook(2)}
-            className={`absolute inset-0 w-full h-full group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-8 sm:hover:-translate-x-10 hover:rotate-12 cursor-pointer ${
+            className={`absolute inset-0 w-full h-full group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-2 sm:hover:translate-x-3 hover:rotate-0 cursor-pointer ${
               focusedBook === 2 ? "z-20" : "z-10"
             }`}
           >
