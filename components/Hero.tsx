@@ -40,7 +40,9 @@ export function Hero() {
           <p className="text-lg md:text-xl lg:text-2xl font-sans text-rich-charcoal/80 max-w-xl mx-auto md:mx-0 leading-relaxed font-medium">
             Join Nigeria&apos;s most curated <strong>book community</strong>. We
             celebrate African writers and modern classics through thoughtful
-            monthly discussions. Currently reading:{" "}
+            monthly discussions.
+            <br />
+            Our current read:{" "}
             <strong>{currentBook.title}</strong> by {currentBook.author} and{" "}
             <strong>{currentBook2.title}</strong> by {currentBook2.author}.
           </p>
@@ -50,63 +52,47 @@ export function Hero() {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative flex flex-row justify-center gap-6 sm:gap-8 w-full max-w-[340px] sm:max-w-[480px] md:max-w-[550px] lg:max-w-[620px]"
+          className="relative w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[300px] aspect-[3/4.5] mt-12 md:mt-0 mx-auto md:mx-0 md:ml-auto md:mr-16 lg:mr-20 flex items-center justify-center"
         >
           {/* First Book */}
-          <div className="relative w-1/2 group/book1 transition-all duration-300 hover:scale-105 hover:z-20 rotate-[-2deg] hover:rotate-0">
+          <div className="absolute inset-0 w-full h-full z-20 group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-8 sm:hover:-translate-x-10 hover:-rotate-12">
             <div className="absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4" />
-            <div className="relative aspect-[3/4.5] overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
+            <div className="relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment">
               <img
                 src={currentBook.cover}
                 alt={`Monthly Book Selection 1: ${currentBook.title} by ${currentBook.author}`}
                 className="w-full h-full object-cover grayscale-[20%] group-hover/book1:grayscale-0 transition-all duration-500"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-parchment p-3 sm:p-5 md:p-6 border-t-4 border-rich-charcoal">
-                <h3 className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-tighter text-rich-charcoal mb-0.5 sm:mb-1">
-                  Pick One
-                </h3>
-                <p className="text-[9px] sm:text-[11px] md:text-xs font-bold text-rich-charcoal/60 truncate">
-                  {currentBook.title}
-                </p>
-              </div>
             </div>
           </div>
 
           {/* Second Book */}
-          <div className="relative w-1/2 group/book2 transition-all duration-300 hover:scale-105 hover:z-20 rotate-[2deg] hover:rotate-0">
+          <div className="absolute inset-0 w-full h-full z-10 group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-8 sm:hover:translate-x-10 hover:rotate-12">
             <div className="absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4" />
-            <div className="relative aspect-[3/4.5] overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
+            <div className="relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment">
               <img
                 src={currentBook2.cover}
                 alt={`Monthly Book Selection 2: ${currentBook2.title} by ${currentBook2.author}`}
                 className="w-full h-full object-cover grayscale-[20%] group-hover/book2:grayscale-0 transition-all duration-500"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-parchment p-3 sm:p-5 md:p-6 border-t-4 border-rich-charcoal">
-                <h3 className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-tighter text-rich-charcoal mb-0.5 sm:mb-1">
-                  Pick Two
-                </h3>
-                <p className="text-[9px] sm:text-[11px] md:text-xs font-bold text-rich-charcoal/60 truncate">
-                  {currentBook2.title}
-                </p>
-              </div>
             </div>
-          </div>
 
-          {/* Floating Sticker */}
-          <motion.div
-            animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
-            transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute -top-3 -right-3 md:-top-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-watermelon-pink rounded-full border-4 border-rich-charcoal flex items-center justify-center text-center p-1 md:p-2 shadow-xl z-30"
-          >
-            <span className="font-serif font-black text-rich-charcoal text-[8px] md:text-[11px] leading-tight uppercase">
-              {badgeText.split(" ").map((word, i) => (
-                <span key={i}>
-                  {word}
-                  <br />
-                </span>
-              ))}
-            </span>
-          </motion.div>
+            {/* Floating Sticker */}
+            <motion.div
+              animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
+              transition={{ repeat: Infinity, duration: 4 }}
+              className="absolute -top-2 -right-3 md:-top-4 md:-right-6 w-12 h-12 md:w-18 md:h-18 bg-watermelon-pink rounded-full border-2 md:border-4 border-rich-charcoal flex items-center justify-center text-center p-0.5 md:p-1.5 shadow-xl z-30 pointer-events-none"
+            >
+              <span className="font-serif font-black text-rich-charcoal text-[6px] md:text-[9px] leading-tight uppercase">
+                {badgeText.split(" ").map((word, i) => (
+                  <span key={i}>
+                    {word}
+                    <br />
+                  </span>
+                ))}
+              </span>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
 
