@@ -6,7 +6,7 @@ import { Countdown } from "./Countdown";
 import { BookBookmark } from "@phosphor-icons/react";
 
 export function Hero() {
-  const { currentBook, badgeText } = useBookStore();
+  const { currentBook, currentBook2, badgeText } = useBookStore();
 
   return (
     <section className="min-h-screen flex flex-col items-center pt-32 pb-20 px-6 md:px-12 bg-warm-sand relative">
@@ -41,7 +41,8 @@ export function Hero() {
             Join Nigeria&apos;s most curated <strong>book community</strong>. We
             celebrate African writers and modern classics through thoughtful
             monthly discussions. Currently reading:{" "}
-            <strong>{currentBook.title}</strong> by {currentBook.author}.
+            <strong>{currentBook.title}</strong> by {currentBook.author} and{" "}
+            <strong>{currentBook2.title}</strong> by {currentBook2.author}.
           </p>
         </motion.div>
 
@@ -49,30 +50,53 @@ export function Hero() {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative group w-full max-w-[280px] sm:max-w-[320px] md:max-w-[360px] lg:max-w-[400px]"
+          className="relative flex flex-row justify-center gap-6 sm:gap-8 w-full max-w-[340px] sm:max-w-[480px] md:max-w-[550px] lg:max-w-[620px]"
         >
-          <div className="absolute inset-0 bg-rich-charcoal rounded-[2.5rem] translate-x-3 translate-y-3 md:translate-x-6 md:translate-y-6" />
-          <div className="relative aspect-[3/4.5] overflow-hidden rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
-            <img
-              src={currentBook.cover}
-              alt={`Monthly Book Selection: ${currentBook.title} by ${currentBook.author}`}
-              className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-parchment p-5 md:p-6 border-t-4 border-rich-charcoal">
-              <h3 className="text-sm md:text-xl font-black uppercase tracking-tighter text-rich-charcoal mb-1">
-                Current Pick
-              </h3>
-              <p className="text-xs md:text-sm font-bold text-rich-charcoal/60 truncate">
-                {currentBook.title}
-              </p>
+          {/* First Book */}
+          <div className="relative w-1/2 group/book1 transition-all duration-300 hover:scale-105 hover:z-20 rotate-[-2deg] hover:rotate-0">
+            <div className="absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4" />
+            <div className="relative aspect-[3/4.5] overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
+              <img
+                src={currentBook.cover}
+                alt={`Monthly Book Selection 1: ${currentBook.title} by ${currentBook.author}`}
+                className="w-full h-full object-cover grayscale-[20%] group-hover/book1:grayscale-0 transition-all duration-500"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-parchment p-3 sm:p-5 md:p-6 border-t-4 border-rich-charcoal">
+                <h3 className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-tighter text-rich-charcoal mb-0.5 sm:mb-1">
+                  Pick One
+                </h3>
+                <p className="text-[9px] sm:text-[11px] md:text-xs font-bold text-rich-charcoal/60 truncate">
+                  {currentBook.title}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Floating Sticker - Adjusted to not fly off screen */}
+          {/* Second Book */}
+          <div className="relative w-1/2 group/book2 transition-all duration-300 hover:scale-105 hover:z-20 rotate-[2deg] hover:rotate-0">
+            <div className="absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4" />
+            <div className="relative aspect-[3/4.5] overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment flex flex-col">
+              <img
+                src={currentBook2.cover}
+                alt={`Monthly Book Selection 2: ${currentBook2.title} by ${currentBook2.author}`}
+                className="w-full h-full object-cover grayscale-[20%] group-hover/book2:grayscale-0 transition-all duration-500"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-parchment p-3 sm:p-5 md:p-6 border-t-4 border-rich-charcoal">
+                <h3 className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-tighter text-rich-charcoal mb-0.5 sm:mb-1">
+                  Pick Two
+                </h3>
+                <p className="text-[9px] sm:text-[11px] md:text-xs font-bold text-rich-charcoal/60 truncate">
+                  {currentBook2.title}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating Sticker */}
           <motion.div
             animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
             transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute -top-2 -right-2 md:-top-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-watermelon-pink rounded-full border-4 border-rich-charcoal flex items-center justify-center text-center p-1 md:p-2 shadow-xl z-20"
+            className="absolute -top-3 -right-3 md:-top-6 md:-right-6 w-16 h-16 md:w-24 md:h-24 bg-watermelon-pink rounded-full border-4 border-rich-charcoal flex items-center justify-center text-center p-1 md:p-2 shadow-xl z-30"
           >
             <span className="font-serif font-black text-rich-charcoal text-[8px] md:text-[11px] leading-tight uppercase">
               {badgeText.split(" ").map((word, i) => (
