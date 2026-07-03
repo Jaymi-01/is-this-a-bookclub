@@ -138,14 +138,6 @@ export default function Home() {
               ITABC.
             </span>
           </div>
-          <div className="flex gap-4 pointer-events-auto">
-            <Link
-              href="/admin"
-              className="bg-rich-charcoal text-parchment p-2 md:p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#2A734D] hover:translate-y-1 hover:shadow-none transition-all"
-            >
-              <Gear size={20} className="md:w-6 md:h-6" weight="bold" />
-            </Link>
-          </div>
         </div>
       </nav>
 
@@ -228,6 +220,13 @@ export default function Home() {
             >
               <Phone size={24} weight="bold" />
             </a>
+            <Link
+              href="/admin"
+              className="bg-parchment text-rich-charcoal p-3 rounded-full border-2 border-rich-charcoal shadow-[4px_4px_0px_#F06595] hover:translate-y-1 hover:shadow-none transition-all"
+              title="Admin Login"
+            >
+              <Gear size={24} weight="bold" />
+            </Link>
           </div>
         </div>
       </footer>
