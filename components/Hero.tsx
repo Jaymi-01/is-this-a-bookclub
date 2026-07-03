@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import { useBookStore } from "@/lib/store";
 import { Countdown } from "./Countdown";
@@ -7,6 +8,7 @@ import { BookBookmark } from "@phosphor-icons/react";
 
 export function Hero() {
   const { currentBook, currentBook2, badgeText } = useBookStore();
+  const [focusedBook, setFocusedBook] = useState<1 | 2>(1);
 
   return (
     <section className="min-h-screen flex flex-col items-center pt-32 pb-20 px-6 md:px-12 bg-warm-sand relative">
@@ -55,9 +57,22 @@ export function Hero() {
           className="relative w-full max-w-[180px] sm:max-w-[220px] md:max-w-[260px] lg:max-w-[300px] aspect-[3/4.5] mt-12 md:mt-0 mx-auto md:mx-0 md:ml-auto md:mr-16 lg:mr-20 flex items-center justify-center"
         >
           {/* First Book */}
-          <div className="absolute inset-0 w-full h-full z-20 group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-8 sm:hover:-translate-x-10 hover:-rotate-12">
-            <div className="absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4" />
-            <div className="relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment">
+          <div
+            onClick={() => setFocusedBook(1)}
+            className={`absolute inset-0 w-full h-full group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-8 sm:hover:-translate-x-10 hover:-rotate-12 cursor-pointer ${
+              focusedBook === 1 ? "z-20" : "z-10"
+            }`}
+          >
+            <div
+              className={`absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4 transition-opacity duration-500 ${
+                focusedBook === 1 ? "opacity-100" : "opacity-70 sm:opacity-100"
+              }`}
+            />
+            <div
+              className={`relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment transition-opacity duration-500 ${
+                focusedBook === 1 ? "opacity-100" : "opacity-70 sm:opacity-100"
+              }`}
+            >
               <img
                 src={currentBook.cover}
                 alt={`Monthly Book Selection 1: ${currentBook.title} by ${currentBook.author}`}
@@ -67,9 +82,22 @@ export function Hero() {
           </div>
 
           {/* Second Book */}
-          <div className="absolute inset-0 w-full h-full z-10 group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-8 sm:hover:translate-x-10 hover:rotate-12">
-            <div className="absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4" />
-            <div className="relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment">
+          <div
+            onClick={() => setFocusedBook(2)}
+            className={`absolute inset-0 w-full h-full group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-8 sm:hover:-translate-x-10 hover:rotate-12 cursor-pointer ${
+              focusedBook === 2 ? "z-20" : "z-10"
+            }`}
+          >
+            <div
+              className={`absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4 transition-opacity duration-500 ${
+                focusedBook === 2 ? "opacity-100" : "opacity-70 sm:opacity-100"
+              }`}
+            />
+            <div
+              className={`relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment transition-opacity duration-500 ${
+                focusedBook === 2 ? "opacity-100" : "opacity-70 sm:opacity-100"
+              }`}
+            >
               <img
                 src={currentBook2.cover}
                 alt={`Monthly Book Selection 2: ${currentBook2.title} by ${currentBook2.author}`}
