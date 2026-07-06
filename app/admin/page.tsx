@@ -357,7 +357,7 @@ export default function AdminPage() {
     setLoadingAction("spotlight1");
     try {
       await setCurrentBook(bookForm);
-      toast.success("Spotlight Pick One updated!");
+      toast.success("Spotlight Book One updated!");
       logActivity("UPDATE_SPOTLIGHT_1", `Changed book 1 to: ${bookForm.title}`);
     } catch (error: unknown) {
       const e = error as Error;
@@ -372,7 +372,7 @@ export default function AdminPage() {
     setLoadingAction("spotlight2");
     try {
       await setCurrentBook2(bookForm2);
-      toast.success("Spotlight Pick Two updated!");
+      toast.success("Spotlight Book Two updated!");
       logActivity(
         "UPDATE_SPOTLIGHT_2",
         `Changed book 2 to: ${bookForm2.title}`,
@@ -867,7 +867,7 @@ export default function AdminPage() {
                           {loadingAction === "spotlight1" ? (
                             <CircleNotch className="animate-spin" size={14} />
                           ) : (
-                            "Update Pick One"
+                            "Update Book One"
                           )}
                         </button>
                         <button
@@ -884,7 +884,7 @@ export default function AdminPage() {
                           ) : (
                             <Archive weight="bold" size={14} />
                           )}
-                          Archive Pick One
+                          Archive Book One
                         </button>
                       </div>
                     </form>
@@ -969,7 +969,7 @@ export default function AdminPage() {
                           {loadingAction === "spotlight2" ? (
                             <CircleNotch className="animate-spin" size={14} />
                           ) : (
-                            "Update Pick Two"
+                            "Update Book Two"
                           )}
                         </button>
                         <button
@@ -986,7 +986,7 @@ export default function AdminPage() {
                           ) : (
                             <Archive weight="bold" size={14} />
                           )}
-                          Archive Pick Two
+                          Archive Book Two
                         </button>
                       </div>
                     </form>
