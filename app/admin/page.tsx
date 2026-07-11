@@ -65,6 +65,7 @@ interface Submission {
   email: string;
   whatsapp: string;
   favoriteGenre: string;
+  age?: string;
   createdAt: Timestamp | null;
 }
 
@@ -609,6 +610,7 @@ export default function AdminPage() {
       "Name",
       "Email",
       "WhatsApp",
+      "Age",
       "Favorite Genre",
       "Date Requested",
     ];
@@ -616,6 +618,7 @@ export default function AdminPage() {
       sub.name,
       sub.email,
       sub.whatsapp,
+      sub.age || "N/A",
       sub.favoriteGenre,
       sub.createdAt?.toDate ? sub.createdAt.toDate().toLocaleString() : "",
     ]);
@@ -1568,8 +1571,13 @@ export default function AdminPage() {
                           <Trash weight="bold" size={18} />
                         )}
                       </button>
-                      <h4 className="font-black text-xs uppercase">
-                        {sub.name}
+                      <h4 className="font-black text-xs uppercase flex items-center gap-2 flex-wrap">
+                        <span>{sub.name}</span>
+                        {sub.age && (
+                          <span className="text-[9px] bg-rich-charcoal/5 px-2 py-0.5 rounded-full font-bold normal-case text-rich-charcoal/60">
+                            Age: {sub.age}
+                          </span>
+                        )}
                       </h4>
                       <div className="flex flex-col gap-1 mt-1">
                         <a

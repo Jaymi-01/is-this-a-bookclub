@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   User,
   Envelope,
@@ -9,10 +9,26 @@ import {
   PaperPlaneRight,
   WhatsappLogo,
   CircleNotch,
+  CalendarBlank,
+  CaretDown,
 } from "@phosphor-icons/react";
 
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+const GENRES = [
+  { value: "fiction", label: "Literary Fiction" },
+  { value: "mystery", label: "Mystery/Thriller" },
+  { value: "sci-fi", label: "Sci-Fi/Fantasy" },
+  { value: "non-fiction", label: "Non-Fiction" },
+];
+
+const GENRE_LABELS: Record<string, string> = {
+  fiction: "Literary Fiction",
+  mystery: "Mystery/Thriller",
+  "sci-fi": "Sci-Fi/Fantasy",
+  "non-fiction": "Non-Fiction",
+};
 
 export function JoinForm() {
   const [formData, setFormData] = useState({
@@ -20,7 +36,9 @@ export function JoinForm() {
     email: "",
     whatsapp: "",
     favoriteGenre: "",
+    age: "",
   });
+  const [isOpen, setIsOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [honeypot, setHoneypot] = useState("");
   const [lastSubmitted, setLastSubmitted] = useState(0);
@@ -48,6 +66,13 @@ export function JoinForm() {
     if (!phoneRegex.test(formData.whatsapp.replace(/\s/g, ""))) {
       newErrors.whatsapp =
         "Please enter a valid WhatsApp number (e.g., +234...).";
+    }
+
+    const ageNum = parseInt(formData.age, 10);
+    if (!formData.age) {
+      newErrors.age = "Please enter your age.";
+    } else if (isNaN(ageNum) || ageNum < 15 || ageNum > 30) {
+      newErrors.age = "Please enter a valid age (15-30).";
     }
 
     if (!formData.favoriteGenre) {
@@ -99,7 +124,7 @@ export function JoinForm() {
         type: "success",
         message: "Welcome to the club! We'll be in touch soon. 📚",
       });
-      setFormData({ name: "", email: "", whatsapp: "", favoriteGenre: "" });
+      setFormData({ name: "", email: "", whatsapp: "", favoriteGenre: "", age: "" });
       setLastSubmitted(now);
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -151,7 +176,7 @@ export function JoinForm() {
             />
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 md:col-span-2">
             <label
               htmlFor="name"
               className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2"
@@ -257,12 +282,51 @@ export function JoinForm() {
               className={`w-full p-4 bg-white border-4 ${errors.whatsapp ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
               placeholder="e.g. 080 1234 5678"
             />
-            <p className="text-[10px] font-bold text-rich-charcoal/40 uppercase tracking-wider">
-              Please provide a reachable WhatsApp number.
-            </p>
             {errors.whatsapp && (
               <p className="text-watermelon-pink text-xs font-bold">
                 {errors.whatsapp}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <label
+              htmlFor="age"
+              className="text-xs font-black uppercase tracking-[0.2em] text-rich-charcoal flex items-center gap-2"
+            >
+              <CalendarBlank weight="bold" className="text-vibrant-lilac" /> Age
+            </label>
+             <input
+              id="age"
+              type="number"
+              min="15"
+              max="30"
+              value={formData.age}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, age: val });
+                if (errors.age) {
+                  setErrors((prev) => ({ ...prev, age: "" }));
+                }
+              }}
+              onBlur={(e) => {
+                const val = e.target.value;
+                if (val.trim()) {
+                  const ageNum = parseInt(val, 10);
+                  if (isNaN(ageNum) || ageNum < 15 || ageNum > 30) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      age: "Please enter a valid age (15-30).",
+                    }));
+                  }
+                }
+              }}
+              className={`w-full p-4 bg-white border-4 ${errors.age ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
+              placeholder="e.g. 25"
+            />
+            {errors.age && (
+              <p className="text-watermelon-pink text-xs font-bold">
+                {errors.age}
               </p>
             )}
           </div>
@@ -275,20 +339,76 @@ export function JoinForm() {
               <BookOpen weight="bold" className="text-forest-green" /> Genre
             </label>
             <div className="relative">
-              <select
-                id="genre"
-                value={formData.favoriteGenre}
-                onChange={(e) =>
-                  setFormData({ ...formData, favoriteGenre: e.target.value })
-                }
-                className={`w-full p-4 bg-white border-4 ${errors.favoriteGenre ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all appearance-none font-bold`}
+              {/* Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className={`w-full p-4 bg-white border-4 ${
+                  errors.favoriteGenre
+                    ? "border-watermelon-pink"
+                    : "border-rich-charcoal"
+                } rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold flex items-center justify-between text-left text-rich-charcoal cursor-pointer`}
               >
-                <option value="">Select genre...</option>
-                <option value="fiction">Literary Fiction</option>
-                <option value="mystery">Mystery/Thriller</option>
-                <option value="sci-fi">Sci-Fi/Fantasy</option>
-                <option value="non-fiction">Non-Fiction</option>
-              </select>
+                <span
+                  className={
+                    formData.favoriteGenre
+                      ? "text-rich-charcoal"
+                      : "text-rich-charcoal/30"
+                  }
+                >
+                  {formData.favoriteGenre
+                    ? GENRE_LABELS[formData.favoriteGenre]
+                    : "Select genre..."}
+                </span>
+                <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+                  <CaretDown weight="bold" size={16} />
+                </motion.div>
+              </button>
+
+              {/* Backdrop listener to close drop-down on click outside */}
+              {isOpen && (
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsOpen(false)}
+                />
+              )}
+
+              {/* Options List */}
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 right-0 top-full mt-2 bg-white border-4 border-rich-charcoal rounded-2xl p-2 shadow-[4px_4px_0px_#1A1A1A] z-50 max-h-60 overflow-y-auto flex flex-col gap-1"
+                  >
+                    {GENRES.map((g) => (
+                      <button
+                        key={g.value}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, favoriteGenre: g.value });
+                          setIsOpen(false);
+                          if (errors.favoriteGenre) {
+                            setErrors((prev) => ({
+                              ...prev,
+                              favoriteGenre: "",
+                            }));
+                          }
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl font-bold text-sm transition-colors cursor-pointer ${
+                          formData.favoriteGenre === g.value
+                            ? "bg-vibrant-lilac text-white"
+                            : "text-rich-charcoal hover:bg-rich-charcoal/5"
+                        }`}
+                      >
+                        {g.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             {errors.favoriteGenre && (
               <p className="text-watermelon-pink text-xs font-bold">
