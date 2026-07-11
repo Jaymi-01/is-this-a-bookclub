@@ -71,8 +71,8 @@ export function JoinForm() {
     const ageNum = parseInt(formData.age, 10);
     if (!formData.age) {
       newErrors.age = "Please enter your age.";
-    } else if (isNaN(ageNum) || ageNum < 13 || ageNum > 120) {
-      newErrors.age = "Please enter a valid age (13-120).";
+    } else if (isNaN(ageNum) || ageNum < 15 || ageNum > 30) {
+      newErrors.age = "Please enter a valid age (15-30).";
     }
 
     if (!formData.favoriteGenre) {
@@ -296,17 +296,29 @@ export function JoinForm() {
             >
               <CalendarBlank weight="bold" className="text-vibrant-lilac" /> Age
             </label>
-            <input
+             <input
               id="age"
               type="number"
-              min="13"
-              max="120"
+              min="15"
+              max="30"
               value={formData.age}
               onChange={(e) => {
                 const val = e.target.value;
                 setFormData({ ...formData, age: val });
                 if (errors.age) {
                   setErrors((prev) => ({ ...prev, age: "" }));
+                }
+              }}
+              onBlur={(e) => {
+                const val = e.target.value;
+                if (val.trim()) {
+                  const ageNum = parseInt(val, 10);
+                  if (isNaN(ageNum) || ageNum < 15 || ageNum > 30) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      age: "Please enter a valid age (15-30).",
+                    }));
+                  }
                 }
               }}
               className={`w-full p-4 bg-white border-4 ${errors.age ? "border-watermelon-pink" : "border-rich-charcoal"} rounded-2xl focus:ring-4 focus:ring-vibrant-lilac outline-none transition-all font-bold`}
