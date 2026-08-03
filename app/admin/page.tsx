@@ -104,6 +104,8 @@ export default function AdminPage() {
     setActiveTheme,
     festiveGreeting,
     setFestiveGreeting,
+    activeBooksCount,
+    setActiveBooksCount,
     init,
   } = useBookStore();
 
@@ -785,17 +787,45 @@ export default function AdminPage() {
             <div className="lg:col-span-2 space-y-12">
               {/* Monthly Spotlight */}
               <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-vibrant-lilac text-white rounded-xl">
-                    <BookOpen size={24} weight="fill" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b-2 border-rich-charcoal/10">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-vibrant-lilac text-white rounded-xl">
+                      <BookOpen size={24} weight="fill" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-serif font-bold">
+                        Monthly Spotlight
+                      </h2>
+                      <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">
+                        Configure and update active reading picks
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-serif font-bold">
-                      Monthly Spotlight
-                    </h2>
-                    <p className="text-xs font-bold text-rich-charcoal/40 uppercase tracking-widest">
-                      Update the two active reading picks
-                    </p>
+
+                  {/* Toggle Selector for 1 vs 2 books */}
+                  <div className="inline-flex bg-parchment p-1 rounded-xl border-2 border-rich-charcoal shrink-0 self-start sm:self-center">
+                    <button
+                      type="button"
+                      onClick={() => setActiveBooksCount(1)}
+                      className={`px-4 py-2 text-xs font-black uppercase rounded-lg border transition-all ${
+                        activeBooksCount === 1
+                          ? "bg-rich-charcoal text-parchment border-rich-charcoal shadow-[2px_2px_0px_#8C52FF]"
+                          : "border-transparent text-rich-charcoal/60 hover:text-rich-charcoal"
+                      }`}
+                    >
+                      1 Book
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveBooksCount(2)}
+                      className={`px-4 py-2 text-xs font-black uppercase rounded-lg border transition-all ${
+                        activeBooksCount === 2
+                          ? "bg-rich-charcoal text-parchment border-rich-charcoal shadow-[2px_2px_0px_#8C52FF]"
+                          : "border-transparent text-rich-charcoal/60 hover:text-rich-charcoal"
+                      }`}
+                    >
+                      2 Books
+                    </button>
                   </div>
                 </div>
 
@@ -894,106 +924,108 @@ export default function AdminPage() {
                   </div>
 
                   {/* Book 2 Row */}
-                  <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center bg-parchment/35 p-6 rounded-2xl border-2 border-rich-charcoal">
-                    {/* Cover Thumbnail */}
-                    <div className="w-16 h-24 shrink-0 bg-parchment rounded-xl border-2 border-rich-charcoal overflow-hidden shadow-[2px_2px_0px_#1A1A1A] self-start lg:self-center">
-                      {bookForm2.cover ? (
-                        <img
-                          src={bookForm2.cover}
-                          alt="Book 2"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[8px] font-black uppercase text-rich-charcoal/20">
-                          No Cover
+                  {activeBooksCount === 2 && (
+                    <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center bg-parchment/35 p-6 rounded-2xl border-2 border-rich-charcoal">
+                      {/* Cover Thumbnail */}
+                      <div className="w-16 h-24 shrink-0 bg-parchment rounded-xl border-2 border-rich-charcoal overflow-hidden shadow-[2px_2px_0px_#1A1A1A] self-start lg:self-center">
+                        {bookForm2.cover ? (
+                          <img
+                            src={bookForm2.cover}
+                            alt="Book 2"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[8px] font-black uppercase text-rich-charcoal/20">
+                            No Cover
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Form Inputs Grid */}
+                      <form
+                        onSubmit={handleUpdateCurrent2}
+                        className="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-4"
+                      >
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                            Title
+                          </label>
+                          <input
+                            value={bookForm2.title}
+                            onChange={(e) =>
+                              setBookForm2({
+                                ...bookForm2,
+                                title: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
+                          />
                         </div>
-                      )}
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                            Author
+                          </label>
+                          <input
+                            value={bookForm2.author}
+                            onChange={(e) =>
+                              setBookForm2({
+                                ...bookForm2,
+                                author: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
+                            Cover URL
+                          </label>
+                          <input
+                            value={bookForm2.cover}
+                            onChange={(e) =>
+                              setBookForm2({
+                                ...bookForm2,
+                                cover: e.target.value,
+                              })
+                            }
+                            className="w-full p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs"
+                            placeholder="Cover URL"
+                          />
+                        </div>
+
+                        {/* Action Buttons Row */}
+                        <div className="md:col-span-3 flex flex-wrap gap-3 pt-2">
+                          <button
+                            type="submit"
+                            disabled={loadingAction === "spotlight2"}
+                            className="flex-1 md:flex-none px-6 py-2.5 bg-vibrant-lilac text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-0.5 hover:shadow-none transition-all uppercase text-xs disabled:opacity-50 flex items-center justify-center gap-2"
+                          >
+                            {loadingAction === "spotlight2" ? (
+                              <CircleNotch className="animate-spin" size={14} />
+                            ) : (
+                              "Update Book Two"
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenArchiveModal(2)}
+                            disabled={
+                              loadingAction === "archiving" || isArchiveModalOpen
+                            }
+                            className="flex-1 md:flex-none px-6 py-2.5 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#F06595] font-black text-xs uppercase hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                          >
+                            {loadingAction === "archiving" &&
+                            archivingBookNumber === 2 ? (
+                              <CircleNotch className="animate-spin" size={14} />
+                            ) : (
+                              <Archive weight="bold" size={14} />
+                            )}
+                            Archive Book Two
+                          </button>
+                        </div>
+                      </form>
                     </div>
-
-                    {/* Form Inputs Grid */}
-                    <form
-                      onSubmit={handleUpdateCurrent2}
-                      className="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-4"
-                    >
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
-                          Title
-                        </label>
-                        <input
-                          value={bookForm2.title}
-                          onChange={(e) =>
-                            setBookForm2({
-                              ...bookForm2,
-                              title: e.target.value,
-                            })
-                          }
-                          className="w-full p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
-                          Author
-                        </label>
-                        <input
-                          value={bookForm2.author}
-                          onChange={(e) =>
-                            setBookForm2({
-                              ...bookForm2,
-                              author: e.target.value,
-                            })
-                          }
-                          className="w-full p-3 border-2 border-rich-charcoal rounded-xl bg-white font-bold text-sm"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-rich-charcoal/40">
-                          Cover URL
-                        </label>
-                        <input
-                          value={bookForm2.cover}
-                          onChange={(e) =>
-                            setBookForm2({
-                              ...bookForm2,
-                              cover: e.target.value,
-                            })
-                          }
-                          className="w-full p-3 border-2 border-rich-charcoal rounded-xl bg-white text-xs"
-                          placeholder="Cover URL"
-                        />
-                      </div>
-
-                      {/* Action Buttons Row */}
-                      <div className="md:col-span-3 flex flex-wrap gap-3 pt-2">
-                        <button
-                          type="submit"
-                          disabled={loadingAction === "spotlight2"}
-                          className="flex-1 md:flex-none px-6 py-2.5 bg-vibrant-lilac text-white font-black rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#1A1A1A] hover:translate-y-0.5 hover:shadow-none transition-all uppercase text-xs disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                          {loadingAction === "spotlight2" ? (
-                            <CircleNotch className="animate-spin" size={14} />
-                          ) : (
-                            "Update Book Two"
-                          )}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenArchiveModal(2)}
-                          disabled={
-                            loadingAction === "archiving" || isArchiveModalOpen
-                          }
-                          className="flex-1 md:flex-none px-6 py-2.5 bg-rich-charcoal text-parchment rounded-xl border-2 border-rich-charcoal shadow-[2px_2px_0px_#F06595] font-black text-xs uppercase hover:translate-y-0.5 hover:shadow-none transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                        >
-                          {loadingAction === "archiving" &&
-                          archivingBookNumber === 2 ? (
-                            <CircleNotch className="animate-spin" size={14} />
-                          ) : (
-                            <Archive weight="bold" size={14} />
-                          )}
-                          Archive Book Two
-                        </button>
-                      </div>
-                    </form>
-                  </div>
+                  )}
                 </div>
               </section>
 
