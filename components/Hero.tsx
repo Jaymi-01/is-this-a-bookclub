@@ -7,7 +7,7 @@ import { Countdown } from "./Countdown";
 import { BookBookmark } from "@phosphor-icons/react";
 
 export function Hero() {
-  const { currentBook, currentBook2, badgeText } = useBookStore();
+  const { currentBook, currentBook2, badgeText, activeBooksCount } = useBookStore();
   const [focusedBook, setFocusedBook] = useState<1 | 2>(1);
 
   return (
@@ -45,8 +45,16 @@ export function Hero() {
             monthly discussions.
             <br />
             Our current read:{" "}
-            <strong>{currentBook.title}</strong> by {currentBook.author} and{" "}
-            <strong>{currentBook2.title}</strong> by {currentBook2.author}.
+            {activeBooksCount === 1 ? (
+              <>
+                <strong>{currentBook.title}</strong> by {currentBook.author}.
+              </>
+            ) : (
+              <>
+                <strong>{currentBook.title}</strong> by {currentBook.author} and{" "}
+                <strong>{currentBook2.title}</strong> by {currentBook2.author}.
+              </>
+            )}
           </p>
         </motion.div>
 
@@ -58,19 +66,23 @@ export function Hero() {
         >
           {/* First Book */}
           <div
-            onClick={() => setFocusedBook(1)}
-            className={`absolute inset-0 w-full h-full group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-2 sm:hover:-translate-x-3 hover:rotate-0 cursor-pointer ${
-              focusedBook === 1 ? "z-20" : "z-10"
-            }`}
+            onClick={() => activeBooksCount === 2 && setFocusedBook(1)}
+            className={
+              activeBooksCount === 1
+                ? "absolute inset-0 w-full h-full group/book1 transition-all duration-500 translate-x-0 rotate-0 hover:scale-105 hover:z-30 cursor-pointer"
+                : `absolute inset-0 w-full h-full group/book1 transition-all duration-500 -translate-x-4 sm:-translate-x-6 -rotate-6 hover:scale-105 hover:z-30 hover:-translate-x-2 sm:hover:-translate-x-3 hover:rotate-0 cursor-pointer ${
+                    focusedBook === 1 ? "z-20" : "z-10"
+                  }`
+            }
           >
             <div
               className={`absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4 transition-opacity duration-500 ${
-                focusedBook === 1 ? "opacity-100" : "opacity-70 sm:opacity-100"
+                activeBooksCount === 1 || focusedBook === 1 ? "opacity-100" : "opacity-70 sm:opacity-100"
               }`}
             />
             <div
               className={`relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment transition-opacity duration-500 ${
-                focusedBook === 1 ? "opacity-100" : "opacity-70 sm:opacity-100"
+                activeBooksCount === 1 || focusedBook === 1 ? "opacity-100" : "opacity-70 sm:opacity-100"
               }`}
             >
               <img
@@ -79,48 +91,68 @@ export function Hero() {
                 className="w-full h-full object-cover grayscale-[20%] group-hover/book1:grayscale-0 transition-all duration-500"
               />
             </div>
+
+            {/* Floating Sticker (When 1 book is active) */}
+            {activeBooksCount === 1 && (
+              <motion.div
+                animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
+                transition={{ repeat: Infinity, duration: 4 }}
+                className="absolute -top-2 -right-3 md:-top-4 md:-right-6 w-12 h-12 md:w-18 md:h-18 bg-watermelon-pink rounded-full border-2 md:border-4 border-rich-charcoal flex items-center justify-center text-center p-0.5 md:p-1.5 shadow-xl z-30 pointer-events-none"
+              >
+                <span className="font-serif font-black text-rich-charcoal text-[6px] md:text-[9px] leading-tight uppercase">
+                  {badgeText.split(" ").map((word, i) => (
+                    <span key={i}>
+                      {word}
+                      <br />
+                    </span>
+                  ))}
+                </span>
+              </motion.div>
+            )}
           </div>
 
-          {/* Second Book */}
-          <div
-            onClick={() => setFocusedBook(2)}
-            className={`absolute inset-0 w-full h-full group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-2 sm:hover:translate-x-3 hover:rotate-0 cursor-pointer ${
-              focusedBook === 2 ? "z-20" : "z-10"
-            }`}
-          >
+          {/* Second Book (Only when 2 books are active) */}
+          {activeBooksCount === 2 && (
             <div
-              className={`absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4 transition-opacity duration-500 ${
-                focusedBook === 2 ? "opacity-100" : "opacity-70 sm:opacity-100"
-              }`}
-            />
-            <div
-              className={`relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment transition-opacity duration-500 ${
-                focusedBook === 2 ? "opacity-100" : "opacity-70 sm:opacity-100"
+              onClick={() => setFocusedBook(2)}
+              className={`absolute inset-0 w-full h-full group/book2 transition-all duration-500 translate-x-4 sm:translate-x-6 rotate-6 hover:scale-105 hover:z-30 hover:translate-x-2 sm:hover:translate-x-3 hover:rotate-0 cursor-pointer ${
+                focusedBook === 2 ? "z-20" : "z-10"
               }`}
             >
-              <img
-                src={currentBook2.cover}
-                alt={`Monthly Book Selection 2: ${currentBook2.title} by ${currentBook2.author}`}
-                className="w-full h-full object-cover grayscale-[20%] group-hover/book2:grayscale-0 transition-all duration-500"
+              <div
+                className={`absolute inset-0 bg-rich-charcoal rounded-[1.5rem] md:rounded-[2.5rem] translate-x-2 translate-y-2 md:translate-x-4 md:translate-y-4 transition-opacity duration-500 ${
+                  focusedBook === 2 ? "opacity-100" : "opacity-70 sm:opacity-100"
+                }`}
               />
-            </div>
+              <div
+                className={`relative w-full h-full overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] border-4 border-rich-charcoal bg-parchment transition-opacity duration-500 ${
+                  focusedBook === 2 ? "opacity-100" : "opacity-70 sm:opacity-100"
+                }`}
+              >
+                <img
+                  src={currentBook2.cover}
+                  alt={`Monthly Book Selection 2: ${currentBook2.title} by ${currentBook2.author}`}
+                  className="w-full h-full object-cover grayscale-[20%] group-hover/book2:grayscale-0 transition-all duration-500"
+                />
+              </div>
 
-            {/* Floating Sticker */}
-            <motion.div
-              animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
-              transition={{ repeat: Infinity, duration: 4 }}
-              className="absolute -top-2 -right-3 md:-top-4 md:-right-6 w-12 h-12 md:w-18 md:h-18 bg-watermelon-pink rounded-full border-2 md:border-4 border-rich-charcoal flex items-center justify-center text-center p-0.5 md:p-1.5 shadow-xl z-30 pointer-events-none"
-            >
-              <span className="font-serif font-black text-rich-charcoal text-[6px] md:text-[9px] leading-tight uppercase">
-                {badgeText.split(" ").map((word, i) => (
-                  <span key={i}>
-                    {word}
-                    <br />
-                  </span>
-                ))}
-              </span>
-            </motion.div>
-          </div>
+              {/* Floating Sticker */}
+              <motion.div
+                animate={{ rotate: [-5, 5, -5], y: [-5, 5, -5] }}
+                transition={{ repeat: Infinity, duration: 4 }}
+                className="absolute -top-2 -right-3 md:-top-4 md:-right-6 w-12 h-12 md:w-18 md:h-18 bg-watermelon-pink rounded-full border-2 md:border-4 border-rich-charcoal flex items-center justify-center text-center p-0.5 md:p-1.5 shadow-xl z-30 pointer-events-none"
+              >
+                <span className="font-serif font-black text-rich-charcoal text-[6px] md:text-[9px] leading-tight uppercase">
+                  {badgeText.split(" ").map((word, i) => (
+                    <span key={i}>
+                      {word}
+                      <br />
+                    </span>
+                  ))}
+                </span>
+              </motion.div>
+            </div>
+          )}
         </motion.div>
       </div>
 
