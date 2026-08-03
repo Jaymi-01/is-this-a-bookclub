@@ -42,15 +42,27 @@ const getTimeUntilNextMeeting = (customDate?: string) => {
 
 export function Countdown() {
   const { meetingDate } = useBookStore();
-  const [timeLeft, setTimeLeft] = useState(
-    getTimeUntilNextMeeting(meetingDate),
-  );
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
+    // Schedule calculation asynchronously to avoid triggering a synchronous cascading render on mount
+    const initialDelay = setTimeout(() => {
+      setTimeLeft(getTimeUntilNextMeeting(meetingDate));
+    }, 0);
+
     const timer = setInterval(() => {
       setTimeLeft(getTimeUntilNextMeeting(meetingDate));
     }, 1000);
-    return () => clearInterval(timer);
+
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(timer);
+    };
   }, [meetingDate]);
 
   return (
