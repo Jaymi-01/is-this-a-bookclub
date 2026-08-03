@@ -1581,7 +1581,7 @@ export default function AdminPage() {
                       </h4>
                       <div className="flex flex-col gap-1 mt-1">
                         <a
-                          href={`https://wa.me/${sub.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
+                          href={`https://wa.me/${sub.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`You received this message because you signified interest in joining *Is this a bookclub*. here is the link to join the official whatsapp group chat: https://chat.whatsapp.com/JIMVWDy51sd7YoBxPkDZJR Welcome, and we do hope you enjoy your stay. -ITABC TEAM`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-[10px] font-black text-green-600 uppercase hover:underline"
@@ -1589,7 +1589,7 @@ export default function AdminPage() {
                           <WhatsappLogo weight="fill" /> Invite to WhatsApp
                         </a>
                         <a
-                          href={`mailto:${sub.email}?subject=${encodeURIComponent("Welcome to Is This A Bookclub?")}&body=${encodeURIComponent(`Hi ${sub.name},\n\nYou received this message because you signified interest in joining Is This A Bookclub.\n\nHere is the link to join the official WhatsApp group chat: https://chat.whatsapp.com/BwiA8PdWEdw8B7gX5LKaxp?mode=gi_t\n\nWelcome, and we do hope you enjoy your stay.\n\n- ITABC TEAM`)}`}
+                          href={`mailto:${sub.email}?subject=${encodeURIComponent("Welcome to Is This A Bookclub?")}&body=${encodeURIComponent(`Hi ${sub.name},\n\nYou received this message because you signified interest in joining Is This A Bookclub.\n\nHere is the link to join the official WhatsApp group chat: https://chat.whatsapp.com/JIMVWDy51sd7YoBxPkDZJR\n\nWelcome, and we do hope you enjoy your stay.\n\n- ITABC TEAM`)}`}
                           className="inline-flex items-center gap-1 text-[10px] font-black text-watermelon-pink uppercase hover:underline"
                         >
                           <Envelope weight="fill" /> Invite to Email
