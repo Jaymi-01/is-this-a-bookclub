@@ -25,6 +25,7 @@ interface BookStore {
   loading: boolean;
   activeTheme: string;
   festiveGreeting: string;
+  activeBooksCount: number;
 
   // Actions
   init: () => void;
@@ -40,6 +41,7 @@ interface BookStore {
   setSignatures: (names: string[]) => Promise<void>;
   setActiveTheme: (theme: string) => Promise<void>;
   setFestiveGreeting: (text: string) => Promise<void>;
+  setActiveBooksCount: (count: number) => Promise<void>;
 }
 
 const DEFAULT_CURRENT: Book = {
@@ -68,6 +70,7 @@ export const useBookStore = create<BookStore>((set) => ({
   signatures: [],
   activeTheme: "default",
   festiveGreeting: "Merry Christmas & Happy New Year from ITABC! 🎄✨",
+  activeBooksCount: 2,
   loading: true,
 
   init: () => {
@@ -93,6 +96,7 @@ export const useBookStore = create<BookStore>((set) => ({
             festiveGreeting:
               data.festiveGreeting ||
               "Merry Christmas & Happy New Year from ITABC! 🎄✨",
+            activeBooksCount: data.activeBooksCount ?? 2,
             loading: false,
           });
         } else {
@@ -202,6 +206,14 @@ export const useBookStore = create<BookStore>((set) => ({
     await setDoc(
       doc(db, "siteContent", "main"),
       { festiveGreeting: text },
+      { merge: true },
+    );
+  },
+  
+  setActiveBooksCount: async (count) => {
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { activeBooksCount: count },
       { merge: true },
     );
   },
