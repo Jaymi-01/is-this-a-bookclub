@@ -122,6 +122,7 @@ export default function AdminPage() {
   const [localActiveTheme, setLocalActiveTheme] = useState(activeTheme);
   const [localFestiveGreeting, setLocalFestiveGreeting] =
     useState(festiveGreeting);
+
   const [pastBookForm, setPastBookForm] = useState({
     title: "",
     author: "",
@@ -489,6 +490,7 @@ export default function AdminPage() {
       setLoadingAction(null);
     }
   };
+
 
   const handleOpenArchiveModal = (bookNumber: 1 | 2) => {
     const targetBook = bookNumber === 1 ? currentBook : currentBook2;
@@ -1398,7 +1400,6 @@ export default function AdminPage() {
                   </button>
                 </form>
               </section>
-
               {/* Club Statistics */}
               <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
                 <div className="flex items-center gap-3 mb-6">

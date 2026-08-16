@@ -120,6 +120,19 @@ export function JoinForm() {
         createdAt: serverTimestamp(),
       });
 
+      // Send email notification via our secure backend Resend API route
+      try {
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+      } catch (emailErr) {
+        console.error("Failed to send email notification:", emailErr);
+      }
+
       setSubmitStatus({
         type: "success",
         message: "Welcome to the club! We'll be in touch soon. 📚",
