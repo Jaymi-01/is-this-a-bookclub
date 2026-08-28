@@ -26,6 +26,7 @@ interface BookStore {
   activeTheme: string;
   festiveGreeting: string;
   activeBooksCount: number;
+  gameModeEnabled: boolean;
 
   // Actions
   init: () => void;
@@ -42,6 +43,7 @@ interface BookStore {
   setActiveTheme: (theme: string) => Promise<void>;
   setFestiveGreeting: (text: string) => Promise<void>;
   setActiveBooksCount: (count: number) => Promise<void>;
+  setGameModeEnabled: (enabled: boolean) => Promise<void>;
 }
 
 const DEFAULT_CURRENT: Book = {
@@ -71,6 +73,7 @@ export const useBookStore = create<BookStore>((set) => ({
   activeTheme: "default",
   festiveGreeting: "Merry Christmas & Happy New Year from ITABC! 🎄✨",
   activeBooksCount: 2,
+  gameModeEnabled: false,
   loading: true,
 
   init: () => {
@@ -97,6 +100,7 @@ export const useBookStore = create<BookStore>((set) => ({
               data.festiveGreeting ||
               "Merry Christmas & Happy New Year from ITABC! 🎄✨",
             activeBooksCount: data.activeBooksCount ?? 2,
+            gameModeEnabled: data.gameModeEnabled || false,
             loading: false,
           });
         } else {
@@ -218,4 +222,11 @@ export const useBookStore = create<BookStore>((set) => ({
     );
   },
 
+  setGameModeEnabled: async (enabled) => {
+    await setDoc(
+      doc(db, "siteContent", "main"),
+      { gameModeEnabled: enabled },
+      { merge: true },
+    );
+  },
 }));
