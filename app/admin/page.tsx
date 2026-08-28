@@ -106,6 +106,8 @@ export default function AdminPage() {
     setFestiveGreeting,
     activeBooksCount,
     setActiveBooksCount,
+    gameModeEnabled,
+    setGameModeEnabled,
     init,
   } = useBookStore();
 
@@ -122,6 +124,7 @@ export default function AdminPage() {
   const [localActiveTheme, setLocalActiveTheme] = useState(activeTheme);
   const [localFestiveGreeting, setLocalFestiveGreeting] =
     useState(festiveGreeting);
+  const [localGameModeEnabled, setLocalGameModeEnabled] = useState(gameModeEnabled);
 
   const [pastBookForm, setPastBookForm] = useState({
     title: "",
@@ -283,6 +286,10 @@ export default function AdminPage() {
   useEffect(() => {
     setLocalFestiveGreeting(festiveGreeting);
   }, [festiveGreeting]);
+
+  useEffect(() => {
+    setLocalGameModeEnabled(gameModeEnabled);
+  }, [gameModeEnabled]);
 
   useEffect(() => {
     if (!user) return;
@@ -490,6 +497,29 @@ export default function AdminPage() {
       setLoadingAction(null);
     }
   };
+
+  const handleUpdateGameMode = async (enabled: boolean) => {
+    setLoadingAction("gamemode");
+    try {
+      await setGameModeEnabled(enabled);
+      setLocalGameModeEnabled(enabled);
+      toast.success(
+        enabled
+          ? "Anniversary Game Mode activated! Website is now locked."
+          : "Anniversary Game Mode deactivated! Website is restored."
+      );
+      logActivity(
+        "UPDATE_GAMEMODE",
+        `Anniversary Game Mode ${enabled ? "activated" : "deactivated"}`
+      );
+    } catch (error: unknown) {
+      const e = error as Error;
+      toast.error(`Error: ${e.message}`);
+    } finally {
+      setLoadingAction(null);
+    }
+  };
+
 
 
   const handleOpenArchiveModal = (bookNumber: 1 | 2) => {
@@ -1400,6 +1430,47 @@ export default function AdminPage() {
                   </button>
                 </form>
               </section>
+
+              {/* Anniversary Game Mode Card */}
+              {user?.email === "millerjoel7597@gmail.com" && (
+                <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-vibrant-lilac text-white rounded-xl">
+                        <Sparkle size={20} weight="fill" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-serif font-bold">Anniversary Game</h2>
+                        <p className="text-[10px] font-black text-rich-charcoal/40 uppercase tracking-wider mt-0.5">
+                          1-Year Celebration Cheat Prevention
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Toggle Switch */}
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={localGameModeEnabled}
+                        disabled={loadingAction === "gamemode"}
+                        onChange={(e) => handleUpdateGameMode(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-14 h-7 bg-parchment border-2 border-rich-charcoal peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-rich-charcoal after:border-rich-charcoal after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-forest-green transition-all shadow-[2px_2px_0px_#1A1A1A]"></div>
+                      <span className="ml-3 text-xs font-black uppercase text-rich-charcoal select-none">
+                        {localGameModeEnabled ? "Active" : "Inactive"}
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="mt-4 p-4 bg-parchment border-2 border-rich-charcoal rounded-2xl">
+                    <p className="text-xs font-bold text-rich-charcoal/70 leading-relaxed">
+                      🚨 <strong>When active:</strong> The landing page is completely blacked out with a playful &quot;No Cheating!&quot; modal to lock access to reading counts and archives during your anniversary games.
+                    </p>
+                  </div>
+                </section>
+              )}
+
               {/* Club Statistics */}
               <section className="bg-white p-8 rounded-3xl border-4 border-rich-charcoal shadow-[8px_8px_0px_#1A1A1A]">
                 <div className="flex items-center gap-3 mb-6">
