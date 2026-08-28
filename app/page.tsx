@@ -16,16 +16,55 @@ import Link from "next/link";
 import { useBookStore } from "@/lib/store";
 import { useEffect } from "react";
 import { SnowEffect } from "@/components/SnowEffect";
-
 export default function Home() {
-  const { booksFinished, activeMembers, activeTheme, festiveGreeting, init } =
-    useBookStore();
+  const {
+    booksFinished,
+    activeMembers,
+    activeTheme,
+    festiveGreeting,
+    gameModeEnabled,
+    init,
+  } = useBookStore();
 
   useEffect(() => {
     init();
   }, [init]);
 
   const showBanner = activeTheme !== "default" && festiveGreeting;
+
+  if (gameModeEnabled) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-rich-charcoal flex items-center justify-center p-6 select-none overflow-hidden">
+        {/* Playful Floating Background Dots */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#FAF6EE_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        
+        {/* Neo-brutalist Anniversary Game Popup Modal */}
+        <div className="relative max-w-lg w-full bg-parchment p-8 md:p-12 rounded-[2.5rem] border-[6px] border-rich-charcoal shadow-[12px_12px_0px_#1A1A1A] text-center transform hover:scale-[1.01] transition-transform">
+          {/* Floating celebratory header badge */}
+          <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-watermelon-pink text-rich-charcoal font-black text-xs uppercase px-6 py-2 rounded-full border-4 border-rich-charcoal shadow-[3px_3px_0px_#1A1A1A] tracking-wider select-none whitespace-nowrap">
+            🤫 Shhh... No Cheating!
+          </div>
+
+          <div className="flex justify-center mb-6 mt-2 text-5xl">
+            🎉📚🎂
+          </div>
+
+          <h2 className="text-3xl md:text-4xl font-serif font-black text-rich-charcoal leading-tight tracking-tight mb-4">
+            Nice try, reader!
+          </h2>
+
+          <p className="text-sm md:text-base font-bold text-rich-charcoal/70 leading-relaxed mb-6">
+            Today is <span className="text-watermelon-pink font-black">Is This A Bookclub's 1-Year Anniversary</span>! 🥳
+            <br className="hidden md:inline" />
+            We are currently playing our anniversary trivia game. To keep the guessing games fair, the website stats and archive are temporarily locked.
+          </p>
+          <p className="text-[10px] font-black uppercase text-rich-charcoal/40 tracking-wider mt-6">
+            Unlock will occur once the celebration game is over. Have fun!
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className={`min-h-screen overflow-x-hidden theme-${activeTheme}`}>
